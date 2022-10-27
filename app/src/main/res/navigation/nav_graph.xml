@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mainFragment">
+
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.songs.MainFragment"
+        android:label="Songs Main"
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_newSongFragment"
+            app:destination="@id/newSongFragment"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out"
+            app:enterAnim="@anim/fade_in"
+            app:exitAnim="@anim/fade_out"
+            />
+        <action
+            android:id="@+id/action_mainFragment_to_songFragment"
+            app:destination="@id/songFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_ratingFragment"
+            app:destination="@id/ratingFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_ratingHistoryFragment"
+            app:destination="@id/ratingHistoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/practiceFragment"
+        android:name="com.example.songs.PracticeFragment"
+        android:label="Practice"
+        tools:layout="@layout/fragment_practice" >
+        <action
+            android:id="@+id/action_practiceFragment_to_practice_or_Perform"
+            app:popUpTo="@id/practice_or_Perform" />
+        <action
+            android:id="@+id/action_practiceFragment_to_songFragment"
+            app:destination="@id/songFragment" />
+        <action
+            android:id="@+id/action_practiceFragment_to_ratingFragment"
+            app:destination="@id/ratingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/newSongFragment"
+        android:name="com.example.songs.NewSongFragment"
+        android:label="NewSongFragment" />
+    <fragment
+        android:id="@+id/performFragment"
+        android:name="com.example.songs.PerformFragment"
+        android:label="Perform"
+        tools:layout="@layout/fragment_perform" >
+        <action
+            android:id="@+id/action_performFragment_to_ratingFragment"
+            app:destination="@id/ratingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/practice_or_Perform"
+        android:name="com.example.songs.PracticeOrPerform"
+        android:label="Practice and Performance"
+        tools:layout="@layout/fragment_practice_or__perform" >
+        <action
+            android:id="@+id/action_practice_or_Perform_to_practiceFragment"
+            app:destination="@id/practiceFragment" />
+        <action
+            android:id="@+id/action_practice_or_Perform_to_performFragment"
+            app:destination="@id/performFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profile_and_Artists"
+        android:name="com.example.songs.Profile_and_Artists"
+        android:label="Artist Profile"
+        tools:layout="@layout/fragment_profile_and__artists" />
+    <fragment
+        android:id="@+id/stats"
+        android:name="com.example.songs.Stats"
+        android:label="Stats"
+        tools:layout="@layout/fragment_stats" />
+    <fragment
+        android:id="@+id/songFragment"
+        android:name="com.example.songs.SongFragment"
+        android:label="fragment_song"
+        tools:layout="@layout/fragment_song" />
+    <fragment
+        android:id="@+id/ratingFragment"
+        android:name="com.example.songs.RatingFragment"
+        android:label="fragment_rating"
+        tools:layout="@layout/fragment_rating" />
+    <fragment
+        android:id="@+id/ratingHistoryFragment"
+        android:name="com.example.songs.RatingHistoryFragment"
+        android:label="Rating History"
+        tools:layout="@layout/fragment_rating_history">
+        <argument
+            android:name="song"
+            app:argType="string" />
+    </fragment>
+</navigation>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable-v24/ic_launcher_background.xml" value="0.33" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_launcher_background.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_songs_background.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_songs_foreground.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/artist_dialog.xml" value="0.1" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/dropdown_item.xml" value="0.121875" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_main.xml" value="0.27921279212792127" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_new_artist.xml" value="0.1" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_new_song.xml" value="0.5" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_perform.xml" value="0.15" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_practice.xml" value="0.18" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_practice_or__perform.xml" value="0.25" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_profile_and__artists.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_rating.xml" value="0.2" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_rating_history.xml" value="0.18" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_song.xml" value="0.47126436781609193" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_stats.xml" value="0.25" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/list_item.xml" value="0.22" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/list_item_options.xml" value="0.1" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/rating_item.xml" value="0.22" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/single_song.xml" value="0.1" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/song_fragment.xml" value="0.11822916666666666" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/menu/bottom_menu.xml" value="0.25" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/menu/menu_action_mode.xml" value="0.1728515625" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/menu/my_menu.xml" value="0.4317073170731707" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.20833333333333334" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+  <component name="VisualizationToolProject">
+    <option name="state">
+      <ProjectState>
+        <option name="scale" value="0.5" />
+      </ProjectState>
+    </option>
+  </component>
+</project>

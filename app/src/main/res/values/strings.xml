@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">Songs</string>
+    <string name="song001">Plush</string>
+    <string name="song002">Dammit</string>
+    <string name="song003">Sympathy for the Devil</string>
+    <string name="song004">The Middle</string>
+    <string name="song005">Fly Away</string>
+    <string name="song006">Say it Ain"'"t So</string>
+    <string name="song007">Interstate Love Song</string>
+    <string name="song008">Santeria</string>
+    <string name="BPM">%d BPM</string>
+    <string name="Tempo">Tempo/BPM</string>
+    <string name="Rating">Rating %d</string>
+
+    <string name="hint_word">Song/Exercise Title/Name</string>
+    <string name="artist_hint_word">Artist name</string>
+    <string name="choose_artist">Choose Artist</string>
+    <string name="button_save">Save</string>
+    <string name="empty_not_saved">not saved because it is empty.</string>
+    <string name="add_song">Add Song/Ex</string>
+    <string name="add_rating">Add Rating</string>
+    <string name="add_artist">Add Artist/Student</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!-- Menu Actions -->
+    <string name="menu_delete_songs">Delete Songs</string>
+    <string name="delete">Delete</string>
+    <string name="ratingSort">Rating</string>
+    <string name="freshnessSort">Freshness</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <!-- Preference Titles -->
+    <string name="messages_header">Messages</string>
+    <string name="sync_header">Sync</string>
+
+    <!-- Messages Preferences -->
+    <string name="signature_title">Your signature</string>
+    <string name="reply_title">Default reply action</string>
+
+    <!-- Sync Preferences -->
+    <string name="sync_title">Sync email periodically</string>
+    <string name="attachment_title">Download incoming attachments</string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails
+    </string>
+    <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="notes_hint">Song notes here:</string>
+    <string name="hint_song_notes">Song notes here: i.e links etc.</string>
+
+
+</resources>

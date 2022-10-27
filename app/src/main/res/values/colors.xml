@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blue_200">#FF90CAF9</color>
+    <color name="blue_500">#FF2196F3</color>
+    <color name="blue_700">#FF1976D2</color>
+    <color name="fuchsia_001">#FF0080</color>
+    <color name="red_001">#E80A0A</color>
+    <color name="green_001">#3FE11C</color>
+
+    <color name="status_color0">#ff0000</color>
+    <color name="status_color20">#ff5500</color>
+    <color name="status_color40">#ffaa00</color>
+    <color name="status_color50">#ffd500</color>
+    <color name="status_color55">#ffea00</color>
+    <color name="status_color60">#ffff00</color>
+    <color name="status_color65">#eaff00</color>
+    <color name="status_color68">#ddff00</color>
+    <color name="status_color70">#d4ff00</color>
+    <color name="status_color73">#c8ff00</color>
+    <color name="status_color76">#bbff00</color>
+    <color name="status_color79">#aeff00</color>
+    <color name="status_color81">#a6ff00</color>
+    <color name="status_color83">#9dff00</color>
+    <color name="status_color85">#95ff00</color>
+    <color name="status_color87">#8cff00</color>
+    <color name="status_color89">#84ff00</color>
+    <color name="status_color91">#7bff00</color>
+    <color name="status_color93">#73ff00</color>
+    <color name="status_color95">#6aff00</color>
+    <color name="status_color97">#62ff00</color>
+    <color name="status_color99">#55ff00</color>
+
+    <color name="buttonLabel">#FFFFFF</color>
+
+
+
+</resources>

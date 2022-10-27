@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item android:title="Home"
+        android:icon="@drawable/ic_baseline_home_24"
+        android:id="@+id/mainFragment"
+        />
+    <item
+        android:id="@+id/practice_or_Perform"
+        android:icon="@drawable/ic_baseline_music_note_24"
+        android:title="Practice" />
+    <item
+        android:id="@+id/profile_and_Artists"
+        android:icon="@drawable/ic_baseline_person_24"
+        android:title="Artist"
+        android:visible="true" />
+    <item
+        android:id="@+id/stats"
+        android:icon="@drawable/ic_baseline_bar_chart_24"
+        android:title="Stats" />
+</menu>

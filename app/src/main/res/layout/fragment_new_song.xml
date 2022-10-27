@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/add_song" />
+        <!--
+        <ImageView
+            android:src="@drawable/header_logo"
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:scaleType="center"
+            android:background="#FFFFBB33"
+            android:contentDescription="@string/app_name" />
+            -->
+        <AutoCompleteTextView
+            android:id="@+id/newSongTitle"
+            android:inputType="text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
+            android:hint="@string/hint_word"
+            android:completionThreshold="1"
+            android:completionHint="Select a song from the database or enter a new song"
+            android:clickable="true"/>
+        <EditText
+            android:id="@+id/newSongBpm"
+            android:inputType="number"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="sans-serif"
+            android:hint="@string/Tempo"/>
+    </LinearLayout>
