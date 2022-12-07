@@ -24,10 +24,9 @@ import com.example.songs.model.SongWithRatings
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-class MainFragment : Fragment(R.layout.fragment_main), PrimaryActionMode.OnActionItemClickListener {
+class MainFragment : Fragment(R.layout.fragment_main) {
 
     //lateinit var binding: FragmentMainBinding
-    private var actionMode: PrimaryActionMode? = null
 
     //shared view model for use in the fragment
     private val songViewModel: SongViewModel by activityViewModels {SongViewModelFactory((requireActivity().application as SongApplication).repository)}
@@ -42,40 +41,12 @@ class MainFragment : Fragment(R.layout.fragment_main), PrimaryActionMode.OnActio
             ItemAdapter.OnClickListener { id, song, newRating ->
                 itemAdapterClick(id, song, newRating)
             }
-        ) {
-            Log.d("Applog", "LongClick lambda from Recycler!!" )
-            if (actionMode != null) {
-                (requireActivity() as MainActivity).isInActionMode = false
-            }else{
-                actionMode = PrimaryActionMode().startActionMode(R.layout.activity_main, R.menu.menu_action_mode,"Action Menu","Stuff")
-            }
-
-            requireActivity().invalidateOptionsMenu()
-            (requireActivity() as MainActivity).isInActionMode = true
-            //actionMode = PrimaryActionMode.startActionMode(mActionModeCallback)
-
-        }
+        )
 
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
 
-        //context menu code 9/27/22
-        registerForContextMenu(recyclerView)
-        /*
-        recyclerView.setOnLongClickListener(object : View.OnLongClickListener {
-            override fun onLongClick(v: View): Boolean {
-                if (actionMode != null) {
-                    return false
-                }
-                actionMode = startActionMode(mActionModeCallback)
-                return true
-            }
-        })
-
-        }
-
-         */
 
         //initialize data
 
@@ -119,11 +90,6 @@ class MainFragment : Fragment(R.layout.fragment_main), PrimaryActionMode.OnActio
             }
 
         }
-    }
-
-
-    override fun onActionItemClick(item: MenuItem) {
-        TODO("Not yet implemented")
     }
 
 }

@@ -28,11 +28,14 @@ import com.example.songs.model.SongWithRatings
 
 
 
-class ItemAdapter(private val activity: Activity, private val context: Context, private val onClickListener: OnClickListener, private val onLongClickListener: () -> Unit) : ListAdapter<SongWithRatings, ItemAdapter.SongViewHolder>(SongsComparator())
+class ItemAdapter(private val activity: Activity, private val context: Context, private val onClickListener: OnClickListener) : ListAdapter<SongWithRatings, ItemAdapter.SongViewHolder>(SongsComparator())
 {
     //expandability has a bug, sometimes it works, other times it doesn't.
     //current debugging messages seem consistent with what is expected but actual expanding does not
 
+
+    val thisAdapter: ItemAdapter = this
+    lateinit var selectedItems: ArrayList<SongWithRatings>
 
     class SongViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -56,7 +59,7 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
         val rateButton: Button = view.findViewById(R.id.rateButton)
 
         //checkbox for selections
-        val check: CheckBox =view.findViewById(R.id.checkBox)
+        val check: CheckBox = view.findViewById(R.id.checkBox)
 
 
     }
@@ -81,19 +84,42 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
         holder.ratingLabel.text = context.resources.getString(R.string.Rating, initialRating )
         holder.lastPlayed.text = item.lastPlayedString()
 
-       holder.cardView.setOnLongClickListener{
-            onLongClickListener()
-            this.notifyDataSetChanged()
-            Log.d("Applog", "LongClick lambda in adapter!!" )
-            true
+        //11/18/2022  this method just invokes the function in MainActivity rather than using a callback
+        holder.titleView.setOnLongClickListener {
+            Log.d("Applog", "LongClick in Adapter !  !  !  !" )
+            //activate ActionMode or do nothing
 
+            if(!(activity as MainActivity).isInActionMode){
+                (activity as MainActivity).startActionMode(thisAdapter)
+                notifyDataSetChanged()
+                true
+            }else {
+                (activity as MainActivity).endActionMode()
+            }
+
+            true
         }
+
+
         Log.d("Applog", "Action mode is " + (activity as MainActivity).isInActionMode.toString() )
-        //checkbox visibility
+        //checkbox visibility per action mode
         if((activity as MainActivity).isInActionMode)
             holder.check.visibility = View.VISIBLE
         else
             holder.check.visibility = View.GONE
+
+        //checkbox selection relies on the model isSelected property
+        holder.check.setOnClickListener{
+            if(!item.isSelected){
+                item.isSelected = true
+                (activity as MainActivity).selectionCounter +=1
+            }else{
+                item.isSelected = false
+                (activity as MainActivity).selectionCounter -=1
+            }
+            (activity as MainActivity).updateCounter()
+        }
+        holder.check.isChecked = item.isSelected
 
         //rating bar functionality
         holder.ratingBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {

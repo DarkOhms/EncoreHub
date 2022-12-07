@@ -19,7 +19,6 @@ class PracticeFragment : Fragment() {
 
     //shared view model for use in the fragment
     private val songViewModel: SongViewModel by activityViewModels(){SongViewModelFactory((requireActivity().application as SongApplication).repository)}
-    private var actionMode: PrimaryActionMode? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,15 +38,7 @@ class PracticeFragment : Fragment() {
             ItemAdapter.OnClickListener { id, song, newRating ->
                 itemAdapterClick(id, song, newRating)
             }
-        ) {
-            if (actionMode != null) {
-                (requireActivity() as MainActivity).isInActionMode = false
-            }
-            requireActivity().invalidateOptionsMenu()
-            (requireActivity() as MainActivity).isInActionMode = true
-            //actionMode = PrimaryActionMode.startActionMode(mActionModeCallback)
-
-        }
+        )
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)

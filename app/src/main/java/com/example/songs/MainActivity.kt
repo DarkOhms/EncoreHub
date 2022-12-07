@@ -12,13 +12,13 @@ https://www.youtube.com/watch?v=KwW99ihfUS0&ab_channel=GreyDevelopers
  */
 
 import android.content.DialogInterface
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
+import android.view.*
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
@@ -28,6 +28,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.songs.adapter.ItemAdapter
 import com.example.songs.model.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -37,7 +38,67 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
     private val songViewModel: SongViewModel by viewModels {
         SongViewModelFactory((application as SongApplication).repository)
     }
+
+    //actionMode variables and callback 11/29/22
+    private var mActionMode: ActionMode? = null
     var isInActionMode = false
+    var actionAdapter: ItemAdapter? = null
+    var selectionCounter = 0
+
+    private val mActionModeCallback: ActionMode.Callback = object : ActionMode.Callback {
+
+
+        override fun onCreateActionMode(mode: ActionMode, menu: Menu?): Boolean {
+            mode.menuInflater.inflate(R.menu.menu_action_mode, menu)
+            mode.title = "Select songs"
+            isInActionMode = true
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            return false
+        }
+
+        override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
+            return when (item.itemId) {
+                R.id.action_make_set_list -> {
+                    Toast.makeText(this@MainActivity, "Make Set List Selected", Toast.LENGTH_SHORT)
+                        .show()
+                    mode.finish()
+                    true
+                }
+                R.id.action_delete_songs -> {
+                    Toast.makeText(this@MainActivity, "Delete Songs selected", Toast.LENGTH_SHORT)
+                        .show()
+                    mode.finish()
+                    true
+                }
+                else -> false
+            }
+        }
+
+        override fun onDestroyActionMode(mode: ActionMode?) {
+            mActionMode = null
+            isInActionMode = false
+            selectionCounter = 0
+            actionAdapter?.notifyDataSetChanged()
+            //reset the isSelected field for the current list, is there a more efficient way???
+            actionAdapter?.currentList?.forEach { it.isSelected = false }
+
+        }
+    }
+
+    //method to end ActionMode from long click in adapter
+    fun endActionMode(){
+        mActionMode?.finish()
+    }
+
+    fun updateCounter(){
+        mActionMode?.title = selectionCounter.toString() + " selected"
+    }
+
+    ////////////////////////////////////////////////////////////////
+    //val counterTextView: TextView = findViewById(R.id.counter_text)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,6 +135,11 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
 
 
     }
+    fun startActionMode(adapter: ItemAdapter) {
+
+        actionAdapter = adapter
+        mActionMode = super.startActionMode(mActionModeCallback)
+    }
     //setting menu in action bar
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
@@ -84,7 +150,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.action_delete_songs -> {
             // User chose delete songs action
-            val alertDialog: AlertDialog? = this.let {
+            val alertDialog: AlertDialog = this.let {
                 val builder = AlertDialog.Builder(it)
                 builder.apply {
                     setPositiveButton(R.string.delete,
@@ -101,7 +167,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
                 // Create the AlertDialog
                 builder.create()
             }
-            alertDialog?.show()
+            alertDialog.show()
             true
         }
 
@@ -236,6 +302,5 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
     override fun onDialogNegativeClick(dialog: DialogFragment) {
         // User touched the dialog's negative button
     }
-
 
 }

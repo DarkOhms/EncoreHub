@@ -5,11 +5,13 @@
     <item
         android:id="@+id/action_make_set_list"
         android:title="New Set List"
-        app:showAsAction="never"/>
+        android:icon="@drawable/ic_action_new_list"
+        app:showAsAction="always"/>
     <item
         android:id="@+id/action_delete_songs"
         android:title="@string/menu_delete_songs"
-        app:showAsAction="never"/>
+        android:icon="@drawable/ic_action_delete"
+        app:showAsAction="always"/>
 
 
 </menu>
