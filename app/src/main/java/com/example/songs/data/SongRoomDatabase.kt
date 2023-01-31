@@ -1,13 +1,11 @@
 package com.example.songs.data
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.songs.model.Artist
-import com.example.songs.model.Instrument
-import com.example.songs.model.Rating
-import com.example.songs.model.Song
+import com.example.songs.model.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,8 +16,10 @@ import kotlinx.coroutines.launch
 possible scope issues with fun populateDatabase
 4/14/2022
 beginning major conversion to version 3
+12/13/2022
+beginning conversion to version 4 for set list capabilities
  */
-@Database(version = 3, entities = [Song::class, Rating::class, Artist::class, Instrument::class])
+@Database(version = 5, entities = [Song::class, Rating::class, Artist::class, Instrument::class,SongList::class, SongListSongM2M::class])
 @TypeConverters(Converters::class)
 abstract class SongRoomDatabase: RoomDatabase() {
 
@@ -27,6 +27,8 @@ abstract class SongRoomDatabase: RoomDatabase() {
     abstract fun ratingDao(): RatingDao
     abstract fun artistDao(): ArtistDao
     abstract fun instrumentDao(): InstrumentDao
+    abstract fun listDao(): ListDao
+    abstract  fun listM2MDao():SongListSongM2MDao
 
     companion object {
         @Volatile
@@ -122,7 +124,7 @@ abstract class SongRoomDatabase: RoomDatabase() {
 
             INSTANCE?.let { database ->
                 scope.launch(Dispatchers.IO) {
-                    populateDatabase(database.songDao(), database.ratingDao())
+                    populateDatabase(database.songDao(), database.ratingDao(), database.artistDao(),database.listDao(),database.listM2MDao())
                 }
 
             }
@@ -134,143 +136,204 @@ abstract class SongRoomDatabase: RoomDatabase() {
          * If you want to start with more songs, just add them.
          */
 
-        suspend fun populateDatabase(songDao: SongDao,ratingDao: RatingDao) {
+        suspend fun populateDatabase(songDao: SongDao,ratingDao: RatingDao, artistDao: ArtistDao, listDao: ListDao, listM2MDao:SongListSongM2MDao) {
             // Start the app with a clean database every time.
             // Not needed if you only populate on creation.
 
+            //IMPORTANT!! default first artistId is 1
+
+            val masterList = SongList("All Songs/Exercises",1)
+            listDao.insert(masterList)
+
             val gIr = 50
             val artistName = "Ear Kitty"
-            //create a song and an initial rating
+            artistDao.insert(Artist(artistName))
+
+            //create a song and an initial rating and associate it with the master list
             var song = Song("Plush", artistName,72)
             songDao.insert(song)
+
             var rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+
+            var listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             //populate with more songs
             song = Song("Dammit", artistName,218)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle, artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Sympathy For The Devil", artistName,117)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle, artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Interstate Love Song", artistName,86)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle, artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Santeria", artistName, 90)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Fly Away", artistName, 80)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Say It Ain't So",artistName,  76)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("The Middle", artistName,162)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Lithium",artistName, 120)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Three Little Birds",artistName, 74)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Twist and Shout",artistName, 124)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Californication", artistName,96)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("House Of The Rising Sun", artistName,77)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Welcome To Paradise", artistName,176)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Headspace", artistName,66)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Moves Like Jagger",artistName, 128)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Susie Q", artistName,130)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Hash Pipe", artistName, 123)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Jumper", artistName, 91)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Watermelon Sugar", artistName,  95)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Machinehead", artistName, 112)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Polly", artistName, 121)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Hound Dog", artistName, 87)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Highway to Hell", artistName, 117)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("No Rain", artistName, 152)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
 
             song = Song("Smells Like Teen Spirit", artistName, 96)
             songDao.insert(song)
             rating = Rating(System.currentTimeMillis(),song.songTitle,artistName, gIr)
             ratingDao.insert(rating)
+            listAssociation = SongListSongM2M(1,song.artistSong)
+            listM2MDao.insert(listAssociation)
         }
     }
 

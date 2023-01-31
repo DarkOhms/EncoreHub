@@ -1,6 +1,7 @@
 package com.example.songs
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -44,13 +45,16 @@ class PracticeFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
 
         //initialize data
-        //initialize data
-
-        songViewModel.sortByTimestamp()
+        songViewModel.currentArtistLive.observe(viewLifecycleOwner){
+            songViewModel.initializeWithArtist()
+        }
 
         //observe changes to allSongs to update practice list
         songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner){
             songViewModel.sortByTimestamp()
+        }
+        songViewModel.currentListLive.observe(viewLifecycleOwner){
+            Log.d("LiveDataDebug","currentListLive observer called in PracticeFragment")
         }
         songViewModel.practiceList.observe(viewLifecycleOwner) { song ->
             // Update the cached copy of the songs in the adapter.

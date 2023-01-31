@@ -1,10 +1,8 @@
 package com.example.songs.data
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.songs.model.Artist
+import com.example.songs.model.ArtistLists
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -18,9 +16,10 @@ interface ArtistDao {
     @Query("SELECT * FROM artist_table")
     fun getAllArtists(): Flow<List<Artist>>
 
+    //gets a list of artist names
     @Query("SELECT name FROM artist_table")
-    fun getArtistList(): List<String>
+    fun getArtistNameList(): List<String>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(artist: Artist)
+    suspend fun insert(artist: Artist): Long
 }

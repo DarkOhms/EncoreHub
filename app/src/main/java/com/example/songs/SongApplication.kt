@@ -14,5 +14,6 @@ class SongApplication: Application() {
     // rather than when the application starts
     private val database by lazy { SongRoomDatabase.getDatabase(this, applicationScope) }
 
-    val repository by lazy { SongRepository(database.songDao(), database.ratingDao(), database.artistDao()) }
+    val repository by lazy { SongRepository(database.songDao(), database.ratingDao(),
+        database.artistDao(), database.listDao(), database.listM2MDao() ) }
 }

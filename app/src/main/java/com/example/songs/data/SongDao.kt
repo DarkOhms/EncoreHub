@@ -32,8 +32,9 @@ interface SongDao {
     @Query("DELETE FROM song_table")
     fun deleteAll()
 
-    @Query("DELETE FROM SONG_TABLE WHERE songTitle = :song")
-    fun deleteSong(song: String)
+    //using artistSong to delete unique to the artist/user
+    @Query("DELETE FROM SONG_TABLE WHERE artistSong = :song")
+    suspend fun deleteSong(song: String)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateSong(song: Song)

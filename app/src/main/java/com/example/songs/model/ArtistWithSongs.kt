@@ -15,5 +15,5 @@ data class ArtistWithSongs(
         parentColumn = "name",
         entityColumn = "artistName"
     )
-    val songs: List<Song>
+    val songs: List<SongWithRatings>
 )

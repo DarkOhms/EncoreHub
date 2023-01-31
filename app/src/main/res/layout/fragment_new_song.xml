@@ -9,15 +9,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:text="@string/add_song" />
-        <!--
-        <ImageView
-            android:src="@drawable/header_logo"
-            android:layout_width="match_parent"
-            android:layout_height="64dp"
-            android:scaleType="center"
-            android:background="#FFFFBB33"
-            android:contentDescription="@string/app_name" />
-            -->
+
         <AutoCompleteTextView
             android:id="@+id/newSongTitle"
             android:inputType="text"

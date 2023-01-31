@@ -50,11 +50,15 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
         //initialize data
 
-       songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner) { song ->
+        songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner) { song ->
             // Update the cached copy of the songs in the adapter.
            Log.d("LiveDataDebug","Main Fragment Observer called")
-           //Log.d("LiveDataDebug",song[0].song.songTitle)
-            song.let { adapter.submitList(it) }
+           Log.d("LiveDataDebug", "Current artist live is " + songViewModel.currentArtistLive.value?.name.toString())
+            if(song.isEmpty()){
+                //handle empty list
+            }else{
+                song.let { adapter.submitList(it) }
+            }
         }
 
         //add song button

@@ -9,6 +9,11 @@ Second complication is that I'm not seeing any MainActivityBinding or activity_m
 
 I'll check this out later:
 https://www.youtube.com/watch?v=KwW99ihfUS0&ab_channel=GreyDevelopers
+
+12/12/2022
+
+Now that I have ActionMode working it's time for another DB upgrade to handle
+the many to many relationship of lists to songs.
  */
 
 import android.content.DialogInterface
@@ -16,12 +21,14 @@ import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
+import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.NavHostFragment
@@ -38,6 +45,10 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
     private val songViewModel: SongViewModel by viewModels {
         SongViewModelFactory((application as SongApplication).repository)
     }
+
+    lateinit var allArtists: List<Artist>
+    lateinit var currentArtist: Artist
+    lateinit var artistListTitles: ArrayList<String>
 
     //actionMode variables and callback 11/29/22
     private var mActionMode: ActionMode? = null
@@ -62,12 +73,16 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem): Boolean {
             return when (item.itemId) {
                 R.id.action_make_set_list -> {
+                    //make a list
+                    songViewModel.saveSelected()
+                    showSetListDialog(currentArtist)
                     Toast.makeText(this@MainActivity, "Make Set List Selected", Toast.LENGTH_SHORT)
                         .show()
                     mode.finish()
                     true
                 }
                 R.id.action_delete_songs -> {
+                    songViewModel.deleteSelectedSongs()
                     Toast.makeText(this@MainActivity, "Delete Songs selected", Toast.LENGTH_SHORT)
                         .show()
                     mode.finish()
@@ -104,18 +119,53 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         super.onCreate(savedInstanceState)
         //create splash screen
         installSplashScreen().apply {
-            //setKeepVisibleCondition(songViewModel.allSongs.asFlow().asLiveData().value.isNullOrEmpty())
+            this.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition { songViewModel.allSongsWithRatings.value.isNullOrEmpty() })
 
         }
         setContentView(R.layout.activity_main)
         //setup toolbar
         setSupportActionBar(findViewById(R.id.my_toolbar))
-
+        /*
         songViewModel.artistNameLive.observe(this) { artistNameLive ->
             // Update the cached copy of the songs in the adapter.
             artistNameLive.let {supportActionBar?.subtitle = it  }
         }
-        //supportActionBar?.subtitle = songViewModel.artistName
+
+         */
+        //initialize viewModel
+        songViewModel.allArtists.observe(this){
+            allArtists = it
+        }
+        songViewModel.allListsWithRatings.observe(this){
+
+        }
+        songViewModel.allArtistListsWithRatings.observe(this){
+            Log.d("LiveDataDebug","AllArtistListsWithRatings is observed")
+            Log.d("LiveDataDebug","size of list is " + it.size.toString())
+        //this causes an unending loop
+
+            val itit = it.iterator()
+            while (itit.hasNext())
+              Log.d("LiveDataDebug","  AllArtistListsWithRatings         " + itit.next().setList.listName)
+
+        }
+
+        songViewModel.allSongsWithRatings.observe(this){
+            //songViewModel.initializeWithArtist()
+        }
+
+        songViewModel.currentArtistLive.observe(this) { currentArtistLive ->
+            // Update the cached copy of the songs in the adapter.
+            currentArtist = currentArtistLive
+            supportActionBar?.subtitle = currentArtist.name
+            Log.d("LiveDataDebug","Current artist is " + currentArtist.name)
+            Log.d("LiveDataDebug","Current artistId is " + currentArtist.artistId)
+
+        }
+
+        songViewModel.allArtistSongsWithRatings.observe(this){
+        }
+
         val appBarConfiguration = AppBarConfiguration(setOf(R.id.mainFragment, R.id.practice_or_Perform, R.id.profile_and_Artists, R.id.stats, R.id.ratingHistoryFragment))
 
 
@@ -127,11 +177,6 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
 
         findViewById<Toolbar>(R.id.my_toolbar).setupWithNavController(navController,appBarConfiguration)
         setupActionBarWithNavController(navController,appBarConfiguration)
-
-        //initialize viewModel
-        songViewModel.allSongsWithRatings.observe(this){
-            songViewModel.initializeWithArtist()
-        }
 
 
     }
@@ -173,7 +218,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
 
         R.id.action_choose_artist -> {
             //create artist list
-            songViewModel.getArtistList { testList ->
+            songViewModel.getArtistNameList { testList ->
                 val artistList = testList.toTypedArray()
 
 
@@ -186,9 +231,6 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
                             // The 'which' argument contains the index position
                             // of the selected item
                             songViewModel.changeArtist(artistList[which])
-                            //val navHostController = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-                            //val mainFrag: MainFragment = navHostController?.childFragmentManager?.findFragmentById(R.id.mainFragment) as MainFragment
-                            //mainFrag.notifyThisFragment()
                         })
                     }
                     // Create the AlertDialog
@@ -267,16 +309,20 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
 
         }else{
             val newSong =
-                songViewModel.artistNameLive.value?.let {
-                    Song(newSongTitle.trim(),
-                        it, newSongBPM)
+                songViewModel.currentArtistLive.value?.let {
+                    it.name?.let { it1 ->
+                        Song(newSongTitle.trim(),
+                            it1, newSongBPM)
+                    }
                 }
             if (newSong != null) {
                 songViewModel.insertSong(newSong)
                 //includes default start rating, may change
-                val rating = songViewModel.artistNameLive.value?.let {
-                    Rating(System.currentTimeMillis(),newSong.songTitle,
-                        it, 50)
+                val rating = songViewModel.currentArtistLive.value?.let {
+                    it.name?.let { it1 ->
+                        Rating(System.currentTimeMillis(),newSong.songTitle,
+                            it1, 50)
+                    }
                 }
                 if (rating != null) {
                     songViewModel.insertRating(rating)
@@ -294,13 +340,22 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         }else{
             val  tempArtist = Artist(newArtist.trim())
             songViewModel.insertArtist(tempArtist)
-            songViewModel.changeArtist(newArtist.trim())
         }
 
     }
 
+
+
     override fun onDialogNegativeClick(dialog: DialogFragment) {
         // User touched the dialog's negative button
+        dialog.dismiss()
+    }
+
+    private fun showSetListDialog(artist: Artist) {
+        // Create an instance of the dialog fragment and show it
+        Log.d("Set List Debug","Artist is " + artist.name + " as of MainActivity call")
+        val dialog = SetListFragment.newInstance(artist)
+        dialog.show(supportFragmentManager, "SetListFragment")
     }
 
 }

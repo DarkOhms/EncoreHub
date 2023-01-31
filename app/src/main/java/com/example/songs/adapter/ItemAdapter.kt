@@ -100,8 +100,6 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
             true
         }
 
-
-        Log.d("Applog", "Action mode is " + (activity as MainActivity).isInActionMode.toString() )
         //checkbox visibility per action mode
         if((activity as MainActivity).isInActionMode)
             holder.check.visibility = View.VISIBLE

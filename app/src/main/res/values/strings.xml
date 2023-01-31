@@ -14,12 +14,14 @@
 
     <string name="hint_word">Song/Exercise Title/Name</string>
     <string name="artist_hint_word">Artist name</string>
+    <string name="list_hint_word">Name Your List</string>
     <string name="choose_artist">Choose Artist</string>
     <string name="button_save">Save</string>
     <string name="empty_not_saved">not saved because it is empty.</string>
     <string name="add_song">Add Song/Ex</string>
     <string name="add_rating">Add Rating</string>
     <string name="add_artist">Add Artist/Student</string>
+    <string name="add_set_list">New Set/Practice List</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="cancel">Cancel</string>
     <string name="confirm">Confirm</string>
@@ -56,6 +58,11 @@
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="notes_hint">Song notes here:</string>
     <string name="hint_song_notes">Song notes here: i.e links etc.</string>
+    <string name="ListSpinner">Choose List</string>
+    <string name="spinner">Choose List</string>
+
+    <!--initialization strings-->
+    <string name="all_songs_exercises">All Songs/Exercises</string>
 
 
 </resources>

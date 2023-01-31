@@ -7,6 +7,8 @@
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable-anydpi/ic_action_new_list.xml" value="0.1" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable-v24/ic_launcher_background.xml" value="0.33" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.20833333333333334" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_baseline_music_note_24.xml" value="0.1" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.1" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_launcher_background.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.20833333333333334" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/drawable/ic_songs_background.xml" value="0.20833333333333334" />
@@ -24,6 +26,7 @@
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_profile_and__artists.xml" value="0.22083333333333333" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_rating.xml" value="0.2" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_rating_history.xml" value="0.18" />
+        <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_set_list.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_song.xml" value="0.47126436781609193" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/fragment_stats.xml" value="0.25" />
         <entry key="..\:/Users/luke_/AndroidStudioProjects/Songs/app/src/main/res/layout/list_item.xml" value="0.22" />
