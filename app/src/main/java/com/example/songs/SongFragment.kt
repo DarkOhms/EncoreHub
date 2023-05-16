@@ -91,7 +91,7 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
                         DialogInterface.OnClickListener { dialog, id ->
                             // User clicked saved button, implement delete logic
                             // Right now we will delete the song but none of the ratings
-                            songViewModel.deleteSong(param1song.song.songTitle)
+                            songViewModel.deleteSong(param1song.song.id)
                             getDialog()?.cancel()
 
                         })
@@ -109,7 +109,7 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
             alertDialog?.show()
         }
 
-        binding.floatingCancelButton.setOnClickListener { getDialog()?.cancel() }
+        binding.floatingCancelButton.setOnClickListener { dialog?.cancel() }
 
     }
 

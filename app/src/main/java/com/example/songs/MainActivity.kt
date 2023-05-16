@@ -38,6 +38,8 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.songs.adapter.ItemAdapter
 import com.example.songs.model.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArtistFragment.NewArtistListener{
 
@@ -119,52 +121,28 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         super.onCreate(savedInstanceState)
         //create splash screen
         installSplashScreen().apply {
-            this.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition { songViewModel.allSongsWithRatings.value.isNullOrEmpty() })
+            //this.setKeepOnScreenCondition(SplashScreen.KeepOnScreenCondition { songViewModel.mainListForFiltering.value?.songList.isNullOrEmpty() })
 
         }
         setContentView(R.layout.activity_main)
         //setup toolbar
         setSupportActionBar(findViewById(R.id.my_toolbar))
-        /*
-        songViewModel.artistNameLive.observe(this) { artistNameLive ->
-            // Update the cached copy of the songs in the adapter.
-            artistNameLive.let {supportActionBar?.subtitle = it  }
-        }
-
-         */
         //initialize viewModel
-        songViewModel.allArtists.observe(this){
-            allArtists = it
-        }
-        songViewModel.allListsWithRatings.observe(this){
 
-        }
-        songViewModel.allArtistListsWithRatings.observe(this){
-            Log.d("LiveDataDebug","AllArtistListsWithRatings is observed")
-            Log.d("LiveDataDebug","size of list is " + it.size.toString())
-        //this causes an unending loop
-
-            val itit = it.iterator()
-            while (itit.hasNext())
-              Log.d("LiveDataDebug","  AllArtistListsWithRatings         " + itit.next().setList.listName)
+        songViewModel.allSongsWithRatingsLiveData.observe(this){
 
         }
 
-        songViewModel.allSongsWithRatings.observe(this){
-            //songViewModel.initializeWithArtist()
+        songViewModel.allArtistWithListsAndSongs.observe(this){
+            Log.d("AllArtistsWithListsAndSongs", it.size.toString())
+            Log.d("AllArtistsWithListsAndSongs", it.firstOrNull()?.artistLists?.firstOrNull()?.songList?.size.toString())
         }
 
-        songViewModel.currentArtistLive.observe(this) { currentArtistLive ->
-            // Update the cached copy of the songs in the adapter.
-            currentArtist = currentArtistLive
-            supportActionBar?.subtitle = currentArtist.name
-            Log.d("LiveDataDebug","Current artist is " + currentArtist.name)
-            Log.d("LiveDataDebug","Current artistId is " + currentArtist.artistId)
-
+        songViewModel.currentArtist.observe(this){
+            supportActionBar?.subtitle = it.name
+            currentArtist = it
         }
 
-        songViewModel.allArtistSongsWithRatings.observe(this){
-        }
 
         val appBarConfiguration = AppBarConfiguration(setOf(R.id.mainFragment, R.id.practice_or_Perform, R.id.profile_and_Artists, R.id.stats, R.id.ratingHistoryFragment))
 
@@ -304,31 +282,8 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
     override fun onDialogPositiveClick(newSongTitle: String, newSongBPM: Int) {
         // User touched the dialog's positive button
         //6/15/2022 I may move much of this into the songViewModel at some point
-
-        if(TextUtils.isEmpty(newSongTitle)){
-
-        }else{
-            val newSong =
-                songViewModel.currentArtistLive.value?.let {
-                    it.name?.let { it1 ->
-                        Song(newSongTitle.trim(),
-                            it1, newSongBPM)
-                    }
-                }
-            if (newSong != null) {
-                songViewModel.insertSong(newSong)
-                //includes default start rating, may change
-                val rating = songViewModel.currentArtistLive.value?.let {
-                    it.name?.let { it1 ->
-                        Rating(System.currentTimeMillis(),newSong.songTitle,
-                            it1, 50)
-                    }
-                }
-                if (rating != null) {
-                    songViewModel.insertRating(rating)
-                }
-            }
-        }
+        //5/16/2023  moved to songViewModel to add state data re artist
+        songViewModel.insertSong(newSongTitle,newSongBPM)
 
     }
 

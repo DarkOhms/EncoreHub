@@ -90,11 +90,11 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
             //activate ActionMode or do nothing
 
             if(!(activity as MainActivity).isInActionMode){
-                (activity as MainActivity).startActionMode(thisAdapter)
+                activity.startActionMode(thisAdapter)
                 notifyDataSetChanged()
                 true
             }else {
-                (activity as MainActivity).endActionMode()
+                activity.endActionMode()
             }
 
             true
@@ -110,12 +110,12 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
         holder.check.setOnClickListener{
             if(!item.isSelected){
                 item.isSelected = true
-                (activity as MainActivity).selectionCounter +=1
+                activity.selectionCounter +=1
             }else{
                 item.isSelected = false
-                (activity as MainActivity).selectionCounter -=1
+                activity.selectionCounter -=1
             }
-            (activity as MainActivity).updateCounter()
+            activity.updateCounter()
         }
         holder.check.isChecked = item.isSelected
 
@@ -147,7 +147,6 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
 
         //expandability added 3/27/2022
         //val isExpandable: Boolean = isVisible[position]
-        Log.d("Applog", "BeforeClick"+ position.toString() +" is " + item.expand.toString() )
 
         holder.titleView.setOnClickListener{
             item.expand = !(item.expand)

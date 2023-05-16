@@ -73,7 +73,7 @@ class NewSongFragment : DialogFragment() {
             val builder = AlertDialog.Builder(it)
 
             //add inflater
-            val inflater = requireActivity().layoutInflater;
+            val inflater = requireActivity().layoutInflater
             val view = inflater.inflate(R.layout.fragment_new_song, null)
 
             //autoComplete

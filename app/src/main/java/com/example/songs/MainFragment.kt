@@ -49,22 +49,24 @@ class MainFragment : Fragment(R.layout.fragment_main) {
 
 
         //initialize data
+        songViewModel.mainListForFiltering.observe(viewLifecycleOwner){
 
-        songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner) { song ->
+        }
+
+        songViewModel.mainFragmentSongList.observe(viewLifecycleOwner) { songList ->
             // Update the cached copy of the songs in the adapter.
-           Log.d("LiveDataDebug","Main Fragment Observer called")
-           Log.d("LiveDataDebug", "Current artist live is " + songViewModel.currentArtistLive.value?.name.toString())
-            if(song.isEmpty()){
-                //handle empty list
-            }else{
-                song.let { adapter.submitList(it) }
-            }
+           Log.d("mainFragmentSongList","Main Fragment Observer called")
+            Log.d("mainFragmentSongList", "current song list: $songList")
+           Log.d("mainFragmentSongList", "Current artist name is " + songViewModel.currentArtist.value?.name)
+            adapter.submitList(songList)
+
         }
 
         //add song button
 
         val fab =  view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
+            songViewModel.testListFunctionality()
             showNewSongDialog()
         }
 
@@ -79,7 +81,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun itemAdapterClick(id: Int, song: SongWithRatings, newRating: Int){
         //switch statement for different onClicks
         when(id){
-            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,songViewModel.artistName, newRating ))
+            R.id.submitRating -> songViewModel.currentArtistName.value?.let {
+                Rating(System.currentTimeMillis(),song.song.songTitle,
+                    song.song.id, newRating )
+            }?.let { songViewModel.insertRating(it) }
             //create rating fragment
             R.id.rateButton -> {
                 Log.d("RatingButtonDebug","rating button clicked")

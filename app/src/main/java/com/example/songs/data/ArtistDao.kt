@@ -2,7 +2,7 @@ package com.example.songs.data
 
 import androidx.room.*
 import com.example.songs.model.Artist
-import com.example.songs.model.ArtistLists
+import com.example.songs.model.ArtistWithListsAndSongs
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -13,6 +13,21 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface ArtistDao {
+
+    @Transaction
+    @Query("SELECT * FROM artist_table")
+    fun getArtistsWithPlaylistsAndSongs(): Flow<List<ArtistWithListsAndSongs>>
+
+    @Transaction
+    @Query("SELECT * FROM artist_table "+
+            "WHERE artistId = :artistId")
+    fun getArtistWithPlaylistsAndSongs(artistId: Long): Flow<ArtistWithListsAndSongs>
+
+    @Transaction
+    @Query("SELECT * FROM artist_table "+
+            "WHERE artistId = :artistId")
+    fun changeArtistWithPlaylistsAndSongs(artistId: Long): ArtistWithListsAndSongs
+
     @Query("SELECT * FROM artist_table")
     fun getAllArtists(): Flow<List<Artist>>
 

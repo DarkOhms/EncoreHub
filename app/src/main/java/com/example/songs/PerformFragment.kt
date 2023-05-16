@@ -12,7 +12,7 @@ import com.example.songs.model.SongViewModelFactory
 
 class PerformFragment : Fragment() {
     //shared view model for use in the fragment
-    private val songViewModel: SongViewModel by activityViewModels(){ SongViewModelFactory((requireActivity().application as SongApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as SongApplication).repository) }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

@@ -20,21 +20,21 @@ interface SongDao {
 
 
     @Query("SELECT * FROM song_table "+
-            "WHERE artistName = :artistName & songTitle = :song")
-    fun getSong(song: String, artistName: String): Song
+            "WHERE id = :songId")
+    fun getSong(songId: Long): Song
 
     @Query("SELECT * FROM song_table")
     fun getAllSongs(): Flow<List<Song>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(song: Song)
+    suspend fun insert(song: Song): Long
 
     @Query("DELETE FROM song_table")
     fun deleteAll()
 
     //using artistSong to delete unique to the artist/user
-    @Query("DELETE FROM SONG_TABLE WHERE artistSong = :song")
-    suspend fun deleteSong(song: String)
+    @Query("DELETE FROM SONG_TABLE WHERE id = :songId")
+    suspend fun deleteSong(songId: Long)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateSong(song: Song)

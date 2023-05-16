@@ -1,10 +1,10 @@
 package com.example.songs.data
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.asLiveData
 import com.example.songs.model.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.*
 
 /*
 12/29/2021
@@ -13,13 +13,41 @@ The first iteration of the repository will only have a
 class SongRepository(private val songDao: SongDao, private val ratingDao: RatingDao, private val artistDao: ArtistDao, private val listDao: ListDao, private val listSongM2MDao: SongListSongM2MDao) {
     // Room executes all queries on a separate thread.
     // Observed Flow will notify the observer when the data has changed.
-    val allSongs: Flow<List<Song>> = songDao.getAllSongs()
-    val allRatings: Flow<List<Rating>> = ratingDao.getAllRatings()
-    val allArtists: Flow<List<Artist>> = artistDao.getAllArtists()
+
     val allSongsWithRatings: Flow<List<SongWithRatings>> = songDao.getAllSongsWithRatings()
-    val allListWithRatings: Flow<List<SongListWithRatings>> = listSongM2MDao.getAllListWithRatings()
+    val allArtists: Flow<List<Artist>> = artistDao.getAllArtists()
+    val allListWithSongs: Flow<List<SongListWithSongs>> = listSongM2MDao.getAllListWithSongs()
+    val allArtistWithListsAndSongs: Flow<List<ArtistWithListsAndSongs>> = artistDao.getArtistsWithPlaylistsAndSongs()
     //All I need is a list of names
 
+    // Initialize currentArtistFilter with a default mapping function
+    //default values
+    var artistName = "First Not Showing"
+    //
+    private val currentArtistFilter = MutableStateFlow<(List<ArtistWithListsAndSongs>) -> ArtistWithListsAndSongs> { artists ->
+        artists.firstOrNull() ?: ArtistWithListsAndSongs(Artist(name = artistName), emptyList())
+    }
+
+    val currentArtistWithListsAndSongs: Flow<ArtistWithListsAndSongs> = combine(
+        allArtistWithListsAndSongs,
+        currentArtistFilter
+    ) { artists, filter ->
+        filter.invoke(artists)
+    }
+
+    fun setCurrentArtistById(artistId: Long) {
+        currentArtistFilter.value = { artists -> artists.find { it.artist.artistId == artistId } ?: artists.firstOrNull() ?: ArtistWithListsAndSongs(Artist(artistName), emptyList()) }
+    }
+
+    fun setCurrentArtistByName(artistName: String) {
+        Log.d("Repository setCurrentArtistByName", "method called to change to " + artistName + " is " + artistName.length.toString())
+        currentArtistFilter.value = {
+                artists ->
+            Log.d("Repository filter", "Artist for filter is: " + artistName )
+
+            artists.find { it.artist.name == artistName }?: ArtistWithListsAndSongs(Artist("Filter Broken"), emptyList())
+        }
+    }
 
     //this puts off the artist selection until later, currently at ViewModel creation
     //7/8/22 new strategy:  filter allSongs to create all songs with ratings in viewModel
@@ -31,24 +59,22 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     //list functions
     //12/12/2022 retrieve artist lists
 
-    fun gatArtistSongLists(artistId:Long):Flow<List<ArtistLists>>{
-        return listDao.getArtistLists(artistId)
+
+
+    fun getCurrentSongs(){
+
+    }
+    fun getSongListWithRatings(listId:Int):Flow<SongListWithSongs>{
+        return listDao.getSongListWithRatings(listId)
     }
 
-    fun gatSongListWithRatings(listId:Long):Flow<SongListWithRatings>{
-        return listSongM2MDao.getSongListWithRatings(listId)
-    }
-
-    fun getArtistListsWithRatings(artistId: Long): Flow<List<SongListWithRatings>>{
+    fun getArtistListsWithRatings(artistId: Long): Flow<List<SongListWithSongs>>{
         return listSongM2MDao.getArtistListsWithRatings(artistId)
-    }
-    fun getArtistLists(artistId: Long):Flow<List<ArtistLists>>{
-        return listDao.getArtistLists(artistId)
     }
     //end list functions
 
-    fun getSong(songTitle: String, artist: String): Song {
-        return songDao.getSong(songTitle, artist)
+    fun getSong(songId: Long ): Song {
+        return songDao.getSong(songId)
     }
 
 
@@ -61,8 +87,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun insertSong(song: Song) {
-        songDao.insert(song)
+    suspend fun insertSong(song: Song):Long {
+        return songDao.insert(song)
     }
 
     @Suppress("RedundantSuspendModifier")
@@ -97,8 +123,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun deleteSong(song: String) {
-        songDao.deleteSong(song)
+    suspend fun deleteSong(songId: Long) {
+        songDao.deleteSong(songId)
     }
 
     @Suppress("RedundantSuspendModifier")

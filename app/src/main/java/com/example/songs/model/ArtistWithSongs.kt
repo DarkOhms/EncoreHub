@@ -12,8 +12,8 @@ import androidx.room.Relation
 data class ArtistWithSongs(
     @Embedded val artist:Artist,
     @Relation(
-        parentColumn = "name",
-        entityColumn = "artistName"
+        parentColumn = "artistId",
+        entityColumn = "artistId"
     )
     val songs: List<SongWithRatings>
 )

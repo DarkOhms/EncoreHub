@@ -14,10 +14,8 @@ import kotlin.time.Duration.Companion.nanoseconds
 data class SongWithRatings @JvmOverloads constructor(
     @Embedded val song: Song,
     @Relation(
-        //dirty method using concatenated artist and song fields
-        //because Room doesn't support a composite relation
-        parentColumn = "artistSong",
-        entityColumn = "artistSong",
+        parentColumn = "id",
+        entityColumn = "songId",
     )
     val ratingHistory: List<Rating>,
     /*

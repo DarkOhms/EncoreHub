@@ -1,5 +1,6 @@
 package com.example.songs.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
@@ -10,11 +11,10 @@ I may change this because it allows for duplicate artists.
 @Entity(tableName = "artist_table")
 data class Artist(
     var name: String?,
-
-    ) {
+    @ColumnInfo(name = "artistId")
     @PrimaryKey(autoGenerate = true)
     //this makes the artistID 1 when it isn't inserted into the DB
     var artistId: Long = 0
 
-}
+)
 

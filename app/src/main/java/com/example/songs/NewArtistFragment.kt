@@ -53,7 +53,7 @@ class NewArtistFragment: DialogFragment() {
             val builder = AlertDialog.Builder(it)
 
             //add inflater
-            val inflater = requireActivity().layoutInflater;
+            val inflater = requireActivity().layoutInflater
             val view = inflater.inflate(R.layout.fragment_new_artist, null)
             builder
                 .setView(view)

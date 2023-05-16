@@ -47,7 +47,7 @@ class SetListFragment : DialogFragment() {
             val builder = AlertDialog.Builder(it)
 
             //add inflater
-            val inflater = requireActivity().layoutInflater;
+            val inflater = requireActivity().layoutInflater
             val view = inflater.inflate(R.layout.fragment_set_list, null)
             builder
                 .setView(view)

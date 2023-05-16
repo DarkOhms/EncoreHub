@@ -1,10 +1,14 @@
 package com.example.songs.model
 
+import android.text.TextUtils
 import android.util.Log
 import androidx.lifecycle.*
 import com.example.songs.data.SongRepository
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.toList
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -25,64 +29,98 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     This really should be the other way around.
      */
 
-    private val _allArtists: MutableLiveData<List<Artist>> =
-        repository.allArtists.asLiveData() as MutableLiveData<List<Artist>>
+    /*
+   3/21/23
+   I am doing a major overhaul.  This is the plan:
+   What order is required for initialization?
 
-    val allArtists: LiveData<List<Artist>>
-        get() = _allArtists
+    1)initialize the artist first
+    2)initialize the lists
+    3)initialize the songsWithRatings
+
+    [ArtistWithListsAndSongs(artist=Artist(name=Ear Kitty, artistId=1), artistLists=[SongListWithSongs(setList=SongList(listName=All Songs/Exercises, artistId=1, listId=1), songList=[SongWithRatings(song=Song(songTitle=Plush, artistName=Ear Kitty, bpm=72, songNotes=, artistSong=Ear KittyPlush), ratingHistory=[Rating(timeStamp=1682712248567, songTitle=Plush, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Dammit, artistName=Ear Kitty, bpm=218, songNotes=, artistSong=Ear KittyDammit), ratingHistory=[Rating(timeStamp=1682712249337, songTitle=Dammit, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Sympathy For The Devil, artistName=Ear Kitty, bpm=117, songNotes=, artistSong=Ear KittySympathy For The Devil), ratingHistory=[Rating(timeStamp=1682712249955, songTitle=Sympathy For The Devil, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Interstate Love Song, artistName=Ear Kitty, bpm=86, songNotes=, artistSong=Ear KittyInterstate Love Song), ratingHistory=[Rating(timeStamp=1682712250214, songTitle=Interstate Love Song, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Santeria, artistName=Ear Kitty, bpm=90, songNotes=, artistSong=Ear KittySanteria), ratingHistory=[Rating(timeStamp=1682712250902, songTitle=Santeria, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Fly Away, artistName=Ear Kitty, bpm=80, songNotes=, artistSong=Ear KittyFly Away), ratingHistory=[Rating(timeStamp=1682712251331, songTitle=Fly Away, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Say It Ain't So, artistName=Ear Kitty, bpm=76, songNotes=, artistSong=Ear KittySay It Ain't So), ratingHistory=[Rating(timeStamp=1682712251987, songTitle=Say It Ain't So, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=The Middle, artistName=Ear Kitty, bpm=162, songNotes=, artistSong=Ear KittyThe Middle), ratingHistory=[Rating(timeStamp=1682712252320, songTitle=The Middle, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Lithium, artistName=Ear Kitty, bpm=120, songNotes=, artistSong=Ear KittyLithium), ratingHistory=[Rating(timeStamp=1682712252749, songTitle=Lithium, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Three Little Birds, artistName=Ear Kitty, bpm=74, songNotes=, artistSong=Ear KittyThree Little Birds), ratingHistory=[Rating(timeStamp=1682712253243, songTitle=Three Little Birds, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Twist and Shout, artistName=Ear Kitty, bpm=124, songNotes=, artistSong=Ear KittyTwist and Shout), ratingHistory=[Rating(timeStamp=1682712253663, songTitle=Twist and Shout, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Californication, artistName=Ear Kitty, bpm=96, songNotes=, artistSong=Ear KittyCalifornication), ratingHistory=[Rating(timeStamp=1682712254286, songTitle=Californication, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=House Of The Rising Sun, artistName=Ear Kitty, bpm=77, songNotes=, artistSong=Ear KittyHouse Of The Rising Sun), ratingHistory=[Rating(timeStamp=1682712254571, songTitle=House Of The Rising Sun, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Welcome To Paradise, artistName=Ear Kitty, bpm=176, songNotes=, artistSong=Ear KittyWelcome To Paradise), ratingHistory=[Rating(timeStamp=1682712255286, songTitle=Welcome To Paradise, artistName=Ear Kitty, rating=50)], expand=false, isSelected=false), SongWithRatings(song=Song(songTitle=Headsp
+D
+
+    Do I need dummy/default values for initialization?
+
+    Strategy 1 ***
+    Load everything and filter
+
+    start with allArtists --> currentArtistLive
+
+    add allArtistsWithListsAndSongs  --> currentArtistLists: filtered by currentArtistLive
+
+    add allListsWithSongs  --> currentListLive: filtered from currentArtistLists and
+                                           from a selection stored in the viewmodel
+
+    add allSongsWithRatings  --> currentSongsLive:the actual songs being displayed as filtered
+                                              by currentListLive
+
+     */
+    //These 4 will be the big loads that will be filtered
+    private val currentArtistWithListsAndSongs = repository.currentArtistWithListsAndSongs
+    private val allSongsWithRatings = repository.allSongsWithRatings
+
+    val allSongsWithRatingsLiveData = allSongsWithRatings.asLiveData() as LiveData<List<SongWithRatings>>
+
+    val allArtistWithListsAndSongs : LiveData<List<ArtistWithListsAndSongs>> = repository.allArtistWithListsAndSongs.asLiveData()
+
+
+    //end of primary load from database
+
 
     //start
     //default artist name for this phase of production
-    var artistName = "Ear Kitty"
+    private var defaultArtistName = "Ear Kitty"
 
-    private val _artistNameLive = MutableLiveData<String>(artistName)
-    val artistNameLive: LiveData<String>
-        get() = _artistNameLive
+    //start
+    //default list for this phase of production
+    val defaultList = SongList("All Songs/Exercises",1)
+    val defaultArtist = Artist("Ear Kitty")
 
-    //this results in a default artistId of 0 for currentArtist
-    var  currentArtist: Artist  = Artist(artistNameLive.value)
+    val currentArtist: LiveData<Artist> =  currentArtistWithListsAndSongs.map {
+        it.artist
+    }.asLiveData()
 
-    private val _currentArtistLive = MutableLiveData<Artist>(currentArtist)
-    val currentArtistLive: LiveData<Artist>
-        get() = _currentArtistLive
-    //end
+    val currentArtistName : LiveData<String> = currentArtistWithListsAndSongs.map {
+        it.artist.name ?: defaultArtistName
+    }.asLiveData()
 
+    val currentArtistLists : LiveData<List<SongListWithSongs>> = currentArtistWithListsAndSongs.map{
+        it.artistLists
+    }.asLiveData()
 
-    private val _allSongsWithRatings: MutableLiveData<List<SongWithRatings>> =
-        repository.allSongsWithRatings.asLiveData() as MutableLiveData<List<SongWithRatings>>
+    //the master song list shown in main fragment
+    var _mainListForFiltering : MutableLiveData<SongListWithSongs> = currentArtistWithListsAndSongs.map{
+        it.artistLists.firstOrNull()
+    }.asLiveData() as MutableLiveData<SongListWithSongs>
 
-    val allSongsWithRatings: LiveData<List<SongWithRatings>>
-        get() = _allSongsWithRatings
+    val mainListForFiltering : LiveData<SongListWithSongs>
+        get() = _mainListForFiltering
 
-    //this gets songs by Artist.name, may change to artistId
-    private val _allArtistSongsWithRatings = (currentArtistLive.value?.let {
-        it.name?.let { it1 ->
-            repository.getArtistSongsWithRatings(
-                it1
-            ).asLiveData()
+    val mainFragmentSongList =  MediatorLiveData<List<SongWithRatings>>().apply {
+        addSource(mainListForFiltering) { list ->
+            // When the current list changes, update the filtered list
+            value = filterSongsByList(allSongsWithRatings.asLiveData().value, list)
         }
-    }) as MutableLiveData<List<SongWithRatings>>
+        addSource(allSongsWithRatings.asLiveData()) { songs ->
+            // When the songs with ratings change, update the filtered list
+            value = filterSongsByList(songs, mainListForFiltering.value)
+        }
+    }
+
+    private fun filterSongsByList(songs: List<SongWithRatings>?, list: SongListWithSongs?): List<SongWithRatings> {
+        return songs?.filter { song ->
+            list?.songList?.contains(song.song) ?: false
+        } ?: emptyList()
+    }
 
 
-    val allArtistSongsWithRatings: LiveData<List<SongWithRatings>>
-        get() = _allArtistSongsWithRatings
 
     var selectedSongs = mutableListOf<SongWithRatings>()
 
-    //////////////
-    private val _allListsWithRatings: MutableLiveData<List<SongListWithRatings>> =
-        repository.allListWithRatings.asLiveData() as MutableLiveData<List<SongListWithRatings>>
+    //this gets songs by Artist.name, may change to artistId
 
-    val allListsWithRatings: LiveData<List<SongListWithRatings>>
-        get() = _allListsWithRatings
-
-    //initializes to artist 1
-    private var _allArtistListsWithRatings = repository.getArtistListsWithRatings(1).asLiveData() as MutableLiveData<List<SongListWithRatings>>
-
-
-
-    val allArtistListsWithRatings: LiveData<List<SongListWithRatings>>
-        get() = _allArtistListsWithRatings
     ////////////
 
     private var temp = mutableListOf<SongWithRatings>()
@@ -91,36 +129,26 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     val practiceList: LiveData<List<SongWithRatings>>
         get() = _practiceList
 
-    //start
-    //default list for this phase of production
-    val defaultList = SongList("All Songs/Exercises",1)
-    val defaultSongListWithRatings = listOf<SongWithRatings>()
-
-    //this results in a default artistId of 0 for currentArtist
-    var  currentList: SongListWithRatings  = SongListWithRatings(defaultList,defaultSongListWithRatings)
-
-    private val _currentListLive = MutableLiveData<SongListWithRatings>(currentList)
-
-    val currentListLive: LiveData<SongListWithRatings>
-        get() = _currentListLive
-    //end
-
-
-
     init {
         _practiceList.value = temp
-        currentArtist.artistId = 1
+        //currentArtist.artistId = 1
+        viewModelScope.launch {
+            repository.allArtistWithListsAndSongs.collect { artists ->
+                Log.d("MyViewModel", "All artists with lists and songs: ${artists.drop(1)}")
+            }
+        }
+
     }
 
 
+    //function used for passing a song to a fragment as an argument
     fun getArgumentSong(songTitle: String): SongWithRatings{
-        val argSong = allArtistSongsWithRatings.value?.find { songWithRatings: SongWithRatings ->
+        val argSong = allSongsWithRatings.asLiveData().value?.find { songWithRatings: SongWithRatings ->
             songTitle == songWithRatings.song.songTitle
 
         }
         return argSong!!
     }
-
     fun getArtistNameList(onResult: (List<String>) -> Unit) {
         viewModelScope.launch {
             val artists = withContext(Dispatchers.IO) { repository.getArtistNameList() }
@@ -131,61 +159,63 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         }
     }
 
-    //may need to change to ID
+    //may need to change to ID only works for existing artists
     fun changeArtist(artist: String){
         //this can change the artist if the artist is in the db
-        _allArtists.value?.find {
-            it.name.toString() == artist
-        }?.let { changeArtist(it) }
+        repository.setCurrentArtistByName(artist)
     }
     //no good for new artists
-    fun changeArtist(artist: Artist) {
+    fun changeArtist(artistId: Long) = viewModelScope.launch {
         Log.d("Change Artist","changeArtist called")
-        currentArtist = artist
-        _currentArtistLive.value = artist
-        initializeWithArtist()
+        repository.setCurrentArtistById(artistId)
+        //initializeWithArtist()
 
     }
-    fun changeNewArtist(artist: Artist, artistId: Long) {
-        Log.d("Change New Artist","changeNewArtist called")
-        artist.artistId = artistId
-        currentArtist = artist
-        _currentArtistLive.value = artist
-        initializeWithArtist()
-
-        //change current list to a new list
-        currentList = allArtistListsWithRatings.value?.get(0)!!
-        _currentListLive.value = currentList
-
+    fun testListFunctionality() = viewModelScope.launch{
+        val testList = withContext(Dispatchers.IO) {
+        _mainListForFiltering.postValue(repository.getSongListWithRatings(5).asLiveData().value)
+        Log.d("Test List Functionality called","mainListForFiltering is named " + _mainListForFiltering.value?.setList?.listName)}
     }
-
-    fun getSongListWithRatings(listId: Long):SongListWithRatings?{
-        return allArtistListsWithRatings.value?.find { it.setList.listId == listId }
-    }
-
-    /*
-    fun updateAllSongs() = viewModelScope.launch {
-        run {
-            _allSongs = repository.getArtistSongsWithRatings(artistNameLive.value.toString())
-                .asLiveData() as MutableLiveData<List<SongWithRatings>>
-        }
-    }
-
-     */
 
 
     /**
      * Launching a new coroutine to insert the data in a non-blocking way
      * these all interact with the repository
      */
-    fun insertSong(song: Song) = viewModelScope.launch {
-        repository.insertSong(song)
+    fun insertSong(newSongTitle: String, newSongBPM: Int) = viewModelScope.launch{
+        if(TextUtils.isEmpty(newSongTitle)){
+
+        }else{
+            val songArtist = currentArtist.value?.name ?: "Unknown Artist"
+            val songArtistId = currentArtist.value?.artistId ?: 0
+
+
+            val newSong = if(newSongBPM > 1){
+                Song(newSongTitle.trim(), songArtist, songArtistId, newSongBPM)
+            }else{
+                Song(newSongTitle.trim(), songArtist, songArtistId)
+            }
+
+            val newSongId = repository.insertSong(newSong)
+            //includes default start rating, may change
+            //this inserts the song, an initial rating and adds the song to "All Songs/Exercises" list
+            val rating = Rating(System.currentTimeMillis(),newSong.songTitle, newSongId , 50)
+            if (rating != null) {
+                insertRating(rating)
+            }
+            //this inserts the song into the artists "All Songs/Exercises" list
+
+            val listId = mainListForFiltering.value?.setList?.listId
+            if (listId != null) {
+                addSongToList(listId,
+                    newSongId)
+            }
+
+        }
     }
 
     fun insertRating(rating: Rating) = viewModelScope.launch {
         repository.insertRating(rating)
-        //should this be here?
-        sortByTimestamp()
     }
 
     //insertArtist will now also add a list for a master song list
@@ -195,7 +225,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         Log.d("insertArtist"," artistId = " + artistId)
         val newMasterList = SongList("All Songs/Exercises",artistId)
         repository.insertList(newMasterList)
-        changeNewArtist(artist,artistId)
+        changeArtist(artistId)
 
     }
 
@@ -203,16 +233,16 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         repository.deleteAll()
     }
 
-    fun deleteSong(song: String) = viewModelScope.launch {
-        repository.deleteSong(song)
+    fun deleteSong(songId: Long) = viewModelScope.launch {
+        repository.deleteSong(songId)
     }
 
     //deletes selected songs within the scope of the current artist
     fun deleteSelectedSongs() = viewModelScope.launch {
-        if(!_allArtistSongsWithRatings.value.isNullOrEmpty()){
-            val selected: List<SongWithRatings> = _allArtistSongsWithRatings.value!!.filter { it.isSelected }
+        if(!mainFragmentSongList.value.isNullOrEmpty()){
+            val selected: List<SongWithRatings> = mainFragmentSongList.value!!.filter { it.isSelected }
             //using artistSong for deletion 12/8/22
-            selected.forEach { deleteSong(it.song.artistSong) }
+            selected.forEach { deleteSong(it.song.id) }
         }
 
     }
@@ -225,12 +255,26 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         }
 
     fun saveSelected(){
-        selectedSongs = (allArtistSongsWithRatings.value as MutableList<SongWithRatings>).filter { it.isSelected } as MutableList<SongWithRatings>
+        selectedSongs = (mainFragmentSongList.value as MutableList<SongWithRatings>).filter { it.isSelected } as MutableList<SongWithRatings>
     }
 
     fun changeListByName(listName:String){
-        currentList.let { _allArtistListsWithRatings.value?.find { it.setList.listName == listName } }
-        _currentListLive.value = currentList
+        /*
+        val currentList = artistLists?.find { it.setList.listName == listName }
+        Log.d("changeListByName called","currentList is " + currentList?.setList?.listName)
+        currentListLive  = currentList?.setList?.listId?.let {
+            repository.getSongListWithRatings(
+                it
+            ).asLiveData()
+        } as MutableLiveData<SongListWithRatings>
+        val itit = currentListSongsWithRatings.value?.songList?.iterator()
+        if (itit != null) {
+            while (itit.hasNext()){
+                Log.d("changeListByName called","currentList is " + itit.next().song.songTitle)
+            }
+        }
+
+         */
     }
 
     fun createNewList(newListName:String, artist: Artist)= viewModelScope.launch{
@@ -243,11 +287,17 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         val listId = repository.insertList(newList)
 
         selectedSongs.forEach {
-            val newListAssociation = SongListSongM2M(listId,it.song.artistSong)
+            val newListAssociation = SongListSongM2M(listId,it.song.id)
             repository.insertListAssociation(newListAssociation)
         }
 
 
+    }
+
+    //adds songs to an existing list
+    fun addSongToList(listId: Long, songId:Long) = viewModelScope.launch{
+        val newListAssociation = SongListSongM2M(listId,songId)
+        repository.insertListAssociation(newListAssociation)
     }
 
 
@@ -259,10 +309,12 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     {
         val songTitles = arrayListOf<String>()
 
-        val iterator = allSongsWithRatings.value!!.listIterator()
+        val iterator = allSongsWithRatingsLiveData.value?.listIterator()
 
-        while (iterator.hasNext())
-        songTitles.add(iterator.next().song.songTitle)
+        if (iterator != null){
+            while (iterator.hasNext())
+                songTitles.add(iterator.next().song.songTitle)
+        }
 
         return songTitles.distinct().toCollection(ArrayList<String>())
 
@@ -274,10 +326,10 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         Log.d("getListTitles called","testing")
         val listTitles = arrayListOf<String>()
 
-        if(allArtistListsWithRatings.value.isNullOrEmpty())
-            Log.d("getListTitles called","allArtistListsWithRatings.value.isNullOrEmpty")
+        if(currentArtistLists.value.isNullOrEmpty())
+            Log.d("getListTitles called","allArtistLists.value.isNullOrEmpty")
 
-        val iterator = allArtistListsWithRatings.value!!.listIterator()
+        val iterator = currentArtistLists.value!!.listIterator()
 
         while (iterator.hasNext())
             listTitles.add(iterator.next().setList.listName)
@@ -287,7 +339,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     }
 
     fun getTempo(songTitle: String): Int{
-        val song = allSongsWithRatings.value?.find { songWithRatings: SongWithRatings ->
+        val song = allSongsWithRatings.asLiveData().value?.find { songWithRatings: SongWithRatings ->
             songTitle == songWithRatings.song.songTitle
 
         }
@@ -295,33 +347,26 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
     }
 
-    fun initializeWithArtist(){
+    fun initializeWithArtist() = viewModelScope.launch{
 
         //initialize artistSongs WithRatings
         Log.d("Initialize Artist","initializeWithArtist called")
         var newList = mutableListOf<SongWithRatings>()
-        newList = allSongsWithRatings.value as MutableList<SongWithRatings>
+        newList = allSongsWithRatingsLiveData.value as MutableList<SongWithRatings>
 
-        var newArtistLists = mutableListOf<SongListWithRatings>()
-        newArtistLists = allListsWithRatings.value as MutableList<SongListWithRatings>
-
-        //make sure the list isn't empty
-        if(newList.isNullOrEmpty()){
-            //handle empty list error
-        }else{
-            //list sorted by performance rating
-            Log.d("Initialize Artist","newList not null")
-            _allArtistSongsWithRatings.value = newList.filter { it.song.artistName == currentArtistLive.value?.name  } as MutableList<SongWithRatings>
-            _allArtistListsWithRatings.value = newArtistLists.filter { it.setList.artistId == currentArtistLive.value?.artistId } as MutableList<SongListWithRatings>
-            if(allArtistListsWithRatings.value.isNullOrEmpty()){
-                Log.d("Initialize Artist","allArtistListsWithRatings.value is currently null")
-            }
-           allArtistListsWithRatings.value?.get(0)!!.also { currentList = it }
-            _currentListLive.value = currentList
-
-        }
 
     }
+    /*
+    fun initializeAllArtistLists(){
+        currentArtistAndLists = allArtistsWithLists.value?.find { it.artist.artistId == currentArtist.artistId }!!
+        Log.d("initializeAllArtistLists"," size of allLists " + allListsWithRatings.value?.size.toString())
+        Log.d("initializeAllArtistLists"," currentArtistLive.artistId is " + currentArtistLive.value?.artistId.toString())
+        Log.d("initializeAllArtistLists","    allArtist")
+        Log.d("initializeAllArtistLists","size of list is " + allArtistListsWithRatings.value?.size.toString())
+        Log.d("initializeAllArtistLists","list owner is " + allArtistListsWithRatings.value?.get(0)?.setList?.artistId.toString())
+    }
+
+     */
     /**
      * Business logic for creating lists
      * moved to SongViewModel from CreateSongList class
@@ -357,7 +402,7 @@ A side, B side tempo
     fun createPracticeList(){
 
         var newList = mutableListOf<SongWithRatings>()
-        newList = currentListLive.value?.songList as MutableList<SongWithRatings>
+        newList = mainFragmentSongList.value as MutableList<SongWithRatings>
 
         //make sure the list isn't empty
         if(newList.isNullOrEmpty()){
@@ -365,7 +410,7 @@ A side, B side tempo
         }else{
             //sort list by performance rating
             //update song ratings
-            newList.forEach(){
+            newList.forEach{
                 it.recentPerformanceRating()
             }
             //list sorted by performance rating
@@ -377,7 +422,7 @@ A side, B side tempo
     }
     fun sortByTimestamp(){
         var newList = mutableListOf<SongWithRatings>()
-        newList = currentListLive.value?.songList as MutableList<SongWithRatings>
+        newList = mainFragmentSongList.value as MutableList<SongWithRatings>
 
         //make sure the list isn't empty
         if(newList.isNullOrEmpty()){
@@ -385,7 +430,7 @@ A side, B side tempo
         }else{
             //sort list by performance rating
             //update song ratings
-            newList.forEach(){
+            newList.forEach{
                 it.lastPlayed()
             }
             //list sorted by performance rating

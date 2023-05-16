@@ -19,11 +19,8 @@ import com.example.songs.model.SongWithRatings
 class PracticeFragment : Fragment() {
 
     //shared view model for use in the fragment
-    private val songViewModel: SongViewModel by activityViewModels(){SongViewModelFactory((requireActivity().application as SongApplication).repository)}
+    private val songViewModel: SongViewModel by activityViewModels {SongViewModelFactory((requireActivity().application as SongApplication).repository)}
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,16 +42,10 @@ class PracticeFragment : Fragment() {
         recyclerView.setHasFixedSize(true)
 
         //initialize data
-        songViewModel.currentArtistLive.observe(viewLifecycleOwner){
-            songViewModel.initializeWithArtist()
-        }
 
         //observe changes to allSongs to update practice list
-        songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner){
+        songViewModel.mainFragmentSongList.observe(viewLifecycleOwner){
             songViewModel.sortByTimestamp()
-        }
-        songViewModel.currentListLive.observe(viewLifecycleOwner){
-            Log.d("LiveDataDebug","currentListLive observer called in PracticeFragment")
         }
         songViewModel.practiceList.observe(viewLifecycleOwner) { song ->
             // Update the cached copy of the songs in the adapter.
@@ -66,7 +57,7 @@ class PracticeFragment : Fragment() {
     private fun itemAdapterClick(id: Int, song: SongWithRatings, newRating: Int){
         //switch statement for different onClicks
         when(id){
-            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,songViewModel.artistName, newRating ))
+            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,song.song.id, newRating ))
             R.id.moreButton -> {
                 var nextFrag = SongFragment.newInstance(song)
                 nextFrag.show(requireActivity().supportFragmentManager, "SingleSongFragment")

@@ -27,12 +27,6 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
 
     //should I use a CursorAdapter?
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -47,7 +41,8 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
         //spinner code
         spinnerDialog = view.findViewById(R.id.spinner_dialog)
 
-        songViewModel.allArtistListsWithRatings.observe(viewLifecycleOwner){
+
+        songViewModel.currentArtistLists.observe(viewLifecycleOwner){
             listNames = songViewModel.getListTitles()
             val arrayAdapter = ArrayAdapter(requireContext(),R.layout.dropdown_item, listNames)
             spinnerDialog.onItemSelectedListener = this
@@ -66,9 +61,9 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
 
         when(v!!.id){
             R.id.practice_button -> {
-                navController!!.navigate(R.id.action_practice_or_Perform_to_practiceFragment)
+                navController.navigate(R.id.action_practice_or_Perform_to_practiceFragment)
             }
-            R.id.perform_button -> navController!!.navigate(R.id.action_practice_or_Perform_to_performFragment)
+            R.id.perform_button -> navController.navigate(R.id.action_practice_or_Perform_to_performFragment)
         }
 
     }
