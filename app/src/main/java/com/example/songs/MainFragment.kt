@@ -54,11 +54,8 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             // Update the cached copy of the songs in the adapter.
            Log.d("LiveDataDebug","Main Fragment Observer called")
            Log.d("LiveDataDebug", "Current artist live is " + songViewModel.currentArtistLive.value?.name.toString())
-            if(song.isEmpty()){
-                //handle empty list
-            }else{
                 song.let { adapter.submitList(it) }
-            }
+
         }
 
         //add song button
@@ -79,7 +76,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun itemAdapterClick(id: Int, song: SongWithRatings, newRating: Int){
         //switch statement for different onClicks
         when(id){
-            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,songViewModel.artistName, newRating ))
+            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,songViewModel.currentArtistLive.value?.name.toString(), newRating ))
             //create rating fragment
             R.id.rateButton -> {
                 Log.d("RatingButtonDebug","rating button clicked")

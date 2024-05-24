@@ -20,7 +20,6 @@ class PracticeFragment : Fragment() {
 
     //shared view model for use in the fragment
     private val songViewModel: SongViewModel by activityViewModels(){SongViewModelFactory((requireActivity().application as SongApplication).repository)}
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -44,10 +43,6 @@ class PracticeFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
 
-        //initialize data
-        songViewModel.currentArtistLive.observe(viewLifecycleOwner){
-            songViewModel.initializeWithArtist()
-        }
 
         //observe changes to allSongs to update practice list
         songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner){
@@ -66,7 +61,8 @@ class PracticeFragment : Fragment() {
     private fun itemAdapterClick(id: Int, song: SongWithRatings, newRating: Int){
         //switch statement for different onClicks
         when(id){
-            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,songViewModel.artistName, newRating ))
+            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,
+                song.song.artistName, newRating ))
             R.id.moreButton -> {
                 var nextFrag = SongFragment.newInstance(song)
                 nextFrag.show(requireActivity().supportFragmentManager, "SingleSongFragment")
