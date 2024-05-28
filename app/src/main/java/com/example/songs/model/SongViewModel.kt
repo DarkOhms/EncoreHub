@@ -104,9 +104,19 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     var  currentList: SongListWithRatings  = SongListWithRatings(defaultList,defaultSongListWithRatings)
 
     private val _currentListLive = MutableLiveData<SongListWithRatings>(currentList)
-
     val currentListLive: LiveData<SongListWithRatings>
         get() = _currentListLive
+
+    val currentSetListLive: LiveData<SongListWithRatings> = allArtistListsWithRatings.map { allLists ->
+
+        if(allLists.isEmpty()){
+            Log.d("currentSetListLive","allLists is empty")
+            return@map(SongListWithRatings(defaultList,defaultSongListWithRatings))
+        }else {
+            return@map allLists.find { it.setList.listName == currentListLive.value?.setList?.listName }!!
+        }
+    }
+
     //end
 
 
@@ -184,6 +194,9 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
      */
     fun insertSong(song: Song) = viewModelScope.launch {
         repository.insertSong(song)
+        //also adding the song to the master list
+        val newListAssociation = SongListSongM2M(allArtistListsWithRatings.value?.get(0)!!.setList.listId,song.artistSong)
+        repository.insertListAssociation(newListAssociation)
     }
 
     fun insertRating(rating: Rating) = viewModelScope.launch {
@@ -231,8 +244,14 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     }
 
     fun changeListByName(listName:String){
-        currentList.let { allArtistListsWithRatings.value?.find { it.setList.listName == listName } }
-        _currentListLive.value = currentList
+        Log.d("changeListByName", allArtistListsWithRatings.value.toString())
+        val currentList = allArtistListsWithRatings.value?.find { it.setList.listName == listName }
+        if(currentList != null) {
+            _currentListLive.value = currentList
+            Log.d("changeListByName", "currentList = " + currentList!!.setList.listName)
+        }else {
+            Log.d("changeListByName", "currentList is null")
+        }
     }
 
     fun createNewList(newListName:String, artist: Artist)= viewModelScope.launch{

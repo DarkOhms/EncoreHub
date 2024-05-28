@@ -327,6 +327,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
                 if (rating != null) {
                     songViewModel.insertRating(rating)
                 }
+
             }
         }
 
