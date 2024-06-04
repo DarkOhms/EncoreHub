@@ -154,6 +154,12 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
             //songViewModel.initializeWithArtist()
         }
 
+        songViewModel.currentListLive.observe(this) { currentListLive ->
+            Log.d("MainActivity LiveData","Current list live is updated")
+            Log.d("MainActivity LiveData",currentListLive.setList.listName)
+
+        }
+
         songViewModel.currentArtistLive.observe(this) { currentArtistLive ->
             // Update the cached copy of the songs in the adapter.
             currentArtist = currentArtistLive

@@ -66,6 +66,7 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
 
         when(v!!.id){
             R.id.practice_button -> {
+
                 navController!!.navigate(R.id.action_practice_or_Perform_to_practiceFragment)
             }
             R.id.perform_button -> navController!!.navigate(R.id.action_practice_or_Perform_to_performFragment)
@@ -77,19 +78,11 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
         Log.d("SpinnerDebug","You selected " + listNames[index] )
         songViewModel.changeListByName(listNames[index])
-        /*
-        if(newListChange!=null){
-            Log.d("ListChangeDebug","New list name = " + newListChange.setList.listName )
-            newListChange.songList.forEach {
-                Log.d("ListChangeDebug", it.song.songTitle )
-            }
-        }
 
-         */
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-        TODO("Not yet implemented")
+        Log.d("SpinnerDebug","You selected nothing")
     }
 
 }

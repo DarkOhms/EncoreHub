@@ -113,6 +113,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             Log.d("currentSetListLive","allLists is empty")
             return@map(SongListWithRatings(defaultList,defaultSongListWithRatings))
         }else {
+            Log.d("currentSetListLive","mapping")
             return@map allLists.find { it.setList.listName == currentListLive.value?.setList?.listName }!!
         }
     }
@@ -165,27 +166,12 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         artist.artistId = artistId
         currentArtist = artist
         _currentArtistLive.value = artist
-        initializeWithArtist()
-
-        //change current list to a new list
-        currentList = allArtistListsWithRatings.value?.get(0)!!
-        _currentListLive.value = currentList
 
     }
 
     fun getSongListWithRatings(listId: Long):SongListWithRatings?{
         return allArtistListsWithRatings.value?.find { it.setList.listId == listId }
     }
-
-    /*
-    fun updateAllSongs() = viewModelScope.launch {
-        run {
-            _allSongs = repository.getArtistSongsWithRatings(artistNameLive.value.toString())
-                .asLiveData() as MutableLiveData<List<SongWithRatings>>
-        }
-    }
-
-     */
 
 
     /**
@@ -248,7 +234,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         val currentList = allArtistListsWithRatings.value?.find { it.setList.listName == listName }
         if(currentList != null) {
             _currentListLive.value = currentList
-            Log.d("changeListByName", "currentList = " + currentList!!.setList.listName)
+            Log.d("changeListByName", "currentList = " + currentListLive.value!!.setList.listName)
         }else {
             Log.d("changeListByName", "currentList is null")
         }
@@ -334,10 +320,11 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             Log.d("Initialize Artist","newList not null")
             if(allArtistListsWithRatings.value.isNullOrEmpty()){
                 Log.d("Initialize Artist","allArtistListsWithRatings.value is currently null")
+            }else {
+                allArtistListsWithRatings.value?.get(0)!!.also { currentList = it }
+                _currentListLive.value = currentList
+                Log.d("Initialize Artist", "currentList = " + currentList.setList.listName)
             }
-           allArtistListsWithRatings.value?.get(0)!!.also { currentList = it }
-            _currentListLive.value = currentList
-            Log.d("Initialize Artist","currentList = " + currentList.setList.listName)
 
         }
 
