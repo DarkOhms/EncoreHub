@@ -8,7 +8,7 @@ data class SongListWithRatings(
     @Relation(
         entity = Song::class,
         parentColumn = "listId",
-        entityColumn = "artistSong",
+        entityColumn = "songId",
         associateBy = Junction(SongListSongM2M::class)
     )
     val songList: List<SongWithRatings>

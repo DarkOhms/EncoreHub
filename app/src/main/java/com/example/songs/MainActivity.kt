@@ -125,17 +125,15 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         setContentView(R.layout.activity_main)
         //setup toolbar
         setSupportActionBar(findViewById(R.id.my_toolbar))
-        /*
-        songViewModel.artistNameLive.observe(this) { artistNameLive ->
-            // Update the cached copy of the songs in the adapter.
-            artistNameLive.let {supportActionBar?.subtitle = it  }
-        }
 
-         */
-        //initialize viewModel
+        //initialize LiveData observers
         songViewModel.allArtists.observe(this){
             allArtists = it
         }
+
+        //initialize viewModel with initial artist this will change with login functionality
+        songViewModel.changeArtist("Student")
+
         songViewModel.allListsWithRatings.observe(this){
 
         }
@@ -171,6 +169,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
 
         songViewModel.allArtistSongsWithRatings.observe(this){
         }
+
 
         val appBarConfiguration = AppBarConfiguration(setOf(R.id.mainFragment, R.id.practice_or_Perform, R.id.profile_and_Artists, R.id.stats, R.id.ratingHistoryFragment))
 
@@ -316,7 +315,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         }else{
             val newSong =
                 songViewModel.currentArtistLive.value?.let {
-                    it.name?.let { it1 ->
+                    it.artistId?.let { it1 ->
                         Song(newSongTitle.trim(),
                             it1, newSongBPM)
                     }
@@ -324,15 +323,6 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
             if (newSong != null) {
                 songViewModel.insertSong(newSong)
                 //includes default start rating, may change
-                val rating = songViewModel.currentArtistLive.value?.let {
-                    it.name?.let { it1 ->
-                        Rating(System.currentTimeMillis(),newSong.songTitle,
-                            it1, 50)
-                    }
-                }
-                if (rating != null) {
-                    songViewModel.insertRating(rating)
-                }
 
             }
         }

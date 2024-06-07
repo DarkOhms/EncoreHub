@@ -76,8 +76,7 @@ class PracticeFragment : Fragment() {
     private fun itemAdapterClick(id: Int, song: SongWithRatings, newRating: Int){
         //switch statement for different onClicks
         when(id){
-            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,
-                song.song.artistName, newRating ))
+            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songId, newRating ))
             R.id.moreButton -> {
                 var nextFrag = SongFragment.newInstance(song)
                 nextFrag.show(requireActivity().supportFragmentManager, "SingleSongFragment")

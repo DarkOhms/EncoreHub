@@ -16,8 +16,8 @@ data class SongWithRatings @JvmOverloads constructor(
     @Relation(
         //dirty method using concatenated artist and song fields
         //because Room doesn't support a composite relation
-        parentColumn = "artistSong",
-        entityColumn = "artistSong",
+        parentColumn = "songId",
+        entityColumn = "songId",
     )
     val ratingHistory: List<Rating>,
     /*
@@ -68,9 +68,13 @@ fun recentPerformanceRating(): Int{
     }
 
     fun lastPlayedString(): String{
-        val raw : Long = ratingHistory.last().timeStamp
-        val date = Date(raw)
-        val dateFormat = SimpleDateFormat("MM/dd/yy hh:mm a",Locale.getDefault())
-        return dateFormat.format(raw)
+        if (ratingHistory.isEmpty()){
+            return "Never"
+        }else{
+            val raw : Long = ratingHistory.last().timeStamp
+            val date = Date(raw)
+            val dateFormat = SimpleDateFormat("MM/dd/yy hh:mm a",Locale.getDefault())
+            return dateFormat.format(raw)
+        }
     }
 }

@@ -90,8 +90,8 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
                     setPositiveButton(R.string.confirm,
                         DialogInterface.OnClickListener { dialog, id ->
                             // User clicked saved button, implement delete logic
-                            // Right now we will delete the song but none of the ratings
-                            songViewModel.deleteSong(param1song.song.songTitle)
+                            // Deletes the song and it's ratings and list associations
+                            songViewModel.deleteSong(param1song.song.songId)
                             getDialog()?.cancel()
 
                         })

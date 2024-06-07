@@ -61,7 +61,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             return@switchMap liveData { emit(emptyList()) } // or return LiveData with empty list
         } else {
             allSongsWithRatings.map { allSongs ->
-                allSongs.filter { it.song.artistName == artist.name }
+                allSongs.filter { it.song.artistId == artist.artistId }
             }
         }
     }
@@ -107,14 +107,12 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     val currentListLive: LiveData<SongListWithRatings>
         get() = _currentListLive
 
-    val currentSetListLive: LiveData<SongListWithRatings> = allArtistListsWithRatings.map { allLists ->
+    val currentSetListLive: LiveData<SongListWithRatings?> = currentListLive.switchMap { currentList ->
 
-        if(allLists.isEmpty()){
-            Log.d("currentSetListLive","allLists is empty")
-            return@map(SongListWithRatings(defaultList,defaultSongListWithRatings))
-        }else {
-            Log.d("currentSetListLive","mapping")
-            return@map allLists.find { it.setList.listName == currentListLive.value?.setList?.listName }!!
+        Log.d("currentSetListLive","mapping")
+        Log.d("currentSetListLive",currentList.setList.listName + " " + currentList.setList.listId)
+        allListsWithRatings.map { list ->
+            list.find { it.setList.listId == currentList.setList.listId }
         }
     }
 
@@ -179,9 +177,9 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
      * these all interact with the repository
      */
     fun insertSong(song: Song) = viewModelScope.launch {
-        repository.insertSong(song)
+        val songId = repository.insertSong(song)
         //also adding the song to the master list
-        val newListAssociation = SongListSongM2M(allArtistListsWithRatings.value?.get(0)!!.setList.listId,song.artistSong)
+        val newListAssociation = SongListSongM2M(allArtistListsWithRatings.value?.get(0)!!.setList.listId,songId)
         repository.insertListAssociation(newListAssociation)
     }
 
@@ -204,8 +202,8 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         repository.deleteAll()
     }
 
-    fun deleteSong(song: String) = viewModelScope.launch {
-        repository.deleteSong(song)
+    fun deleteSong(songId: Long) = viewModelScope.launch {
+        repository.deleteSong(songId)
     }
 
     //deletes selected songs within the scope of the current artist
@@ -213,7 +211,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         if(!allArtistSongsWithRatings.value.isNullOrEmpty()){
             val selected: List<SongWithRatings> = allArtistSongsWithRatings.value!!.filter { it.isSelected }
             //using artistSong for deletion 12/8/22
-            selected.forEach { deleteSong(it.song.artistSong) }
+            selected.forEach { deleteSong(it.song.songId) }
         }
 
     }
@@ -233,7 +231,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         Log.d("changeListByName", allArtistListsWithRatings.value.toString())
         val currentList = allArtistListsWithRatings.value?.find { it.setList.listName == listName }
         if(currentList != null) {
-            _currentListLive.value = currentList
+            _currentListLive.value = currentList!!
             Log.d("changeListByName", "currentList = " + currentListLive.value!!.setList.listName)
         }else {
             Log.d("changeListByName", "currentList is null")
@@ -250,7 +248,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         val listId = repository.insertList(newList)
 
         selectedSongs.forEach {
-            val newListAssociation = SongListSongM2M(listId,it.song.artistSong)
+            val newListAssociation = SongListSongM2M(listId,it.song.songId)
             repository.insertListAssociation(newListAssociation)
         }
 
@@ -269,7 +267,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         val iterator = allSongsWithRatings.value!!.listIterator()
 
         while (iterator.hasNext())
-        songTitles.add(iterator.next().song.songTitle)
+            songTitles.add(iterator.next().song.songTitle)
 
         return songTitles.distinct().toCollection(ArrayList<String>())
 

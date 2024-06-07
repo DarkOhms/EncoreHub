@@ -24,8 +24,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     //this puts off the artist selection until later, currently at ViewModel creation
     //7/8/22 new strategy:  filter allSongs to create all songs with ratings in viewModel
 
-    fun getArtistSongsWithRatings(artist:String):Flow<List<SongWithRatings>>{
-       return songDao.getArtistSongsWithRatings(artist)
+    fun getArtistSongsWithRatings(artistId:Long):Flow<List<SongWithRatings>>{
+       return songDao.getArtistSongsWithRatings(artistId)
     }
 
     //list functions
@@ -47,8 +47,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     }
     //end list functions
 
-    fun getSong(songTitle: String, artist: String): Song {
-        return songDao.getSong(songTitle, artist)
+    fun getSong(songId:Long): Song {
+        return songDao.getSong(songId)
     }
 
 
@@ -61,8 +61,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun insertSong(song: Song) {
-        songDao.insert(song)
+    suspend fun insertSong(song: Song):Long {
+        return songDao.insert(song)
     }
 
     @Suppress("RedundantSuspendModifier")
@@ -97,8 +97,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun deleteSong(song: String) {
-        songDao.deleteSong(song)
+    suspend fun deleteSong(songId:Long) {
+        songDao.deleteSong(songId)
     }
 
     @Suppress("RedundantSuspendModifier")

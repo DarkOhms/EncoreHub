@@ -11,8 +11,8 @@ interface SongDao {
     //rather than having get artist with songs I decided to try it all in this transaction
     @Transaction
     @Query("SELECT * FROM song_table "+
-    "WHERE artistName = :artistName")
-    fun getArtistSongsWithRatings(artistName: String): Flow<List<SongWithRatings>>
+    "WHERE artistId = :artistId")
+    fun getArtistSongsWithRatings(artistId: Long): Flow<List<SongWithRatings>>
 
     @Transaction
     @Query("SELECT * FROM song_table ")
@@ -20,21 +20,21 @@ interface SongDao {
 
 
     @Query("SELECT * FROM song_table "+
-            "WHERE artistName = :artistName & songTitle = :song")
-    fun getSong(song: String, artistName: String): Song
+            "WHERE songId = :songId")
+    fun getSong(songId: Long): Song
 
     @Query("SELECT * FROM song_table")
     fun getAllSongs(): Flow<List<Song>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(song: Song)
+    suspend fun insert(song: Song): Long
 
     @Query("DELETE FROM song_table")
     fun deleteAll()
 
-    //using artistSong to delete unique to the artist/user
-    @Query("DELETE FROM SONG_TABLE WHERE artistSong = :song")
-    suspend fun deleteSong(song: String)
+    //now appropriately using the songId to delete the song
+    @Query("DELETE FROM SONG_TABLE WHERE songId = :songId")
+    suspend fun deleteSong(songId: Long)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateSong(song: Song)

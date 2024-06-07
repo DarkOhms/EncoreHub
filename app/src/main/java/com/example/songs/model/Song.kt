@@ -12,18 +12,34 @@ First attempt at a simple database migration adding notes to the song entity.
 Success.
 
 Now for a much more useful migration adding artist name and turning it into a composite key
+6/4/2024
+Long overdue database update to support proper foreign keys and cascading delete
  */
-@Entity(tableName = "song_table", primaryKeys = ["songTitle", "artistName"])
+@Entity(tableName = "song_table",
+    foreignKeys = [
+        ForeignKey(
+            entity = Artist::class,
+            parentColumns = ["artistId"],
+            childColumns = ["artistId"],
+            onDelete = ForeignKey.CASCADE // Cascade delete from Artist to Song
+        )
+    ],
+    indices = [
+        Index(value = ["songTitle", "artistId"], unique = true),
+        Index(value = ["artistId"])
+    ]
+)
 data class Song(
-     val songTitle: String,
-     val artistName: String,
-     val bpm: Int,
-     val songNotes: String,
-     val artistSong: String,
+    @PrimaryKey(autoGenerate = true)
+    val songId: Long = 0,
+    val songTitle: String,
+    val artistId: Long,
+    val bpm: Int,
+    val songNotes: String,
 
 ){
     //constructor without bpm
-    constructor(songTitle: String, artistName: String) :this(songTitle, artistName, 321, "",artistName+songTitle)
+    constructor(songTitle: String, artistId: Long) : this(0, songTitle, artistId, 321, "")
     //constructor with bpm
-    constructor(songTitle: String, artistName: String, bpm: Int ) :this(songTitle, artistName, bpm, "",artistName+songTitle)
+    constructor(songTitle: String, artistId: Long, bpm: Int ) : this(0,songTitle, artistId, bpm, "")
 }

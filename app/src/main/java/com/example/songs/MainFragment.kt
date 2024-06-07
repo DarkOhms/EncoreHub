@@ -76,7 +76,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     private fun itemAdapterClick(id: Int, song: SongWithRatings, newRating: Int){
         //switch statement for different onClicks
         when(id){
-            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songTitle,songViewModel.currentArtistLive.value?.name.toString(), newRating ))
+            R.id.submitRating ->  songViewModel.insertRating( Rating(System.currentTimeMillis(),song.song.songId, newRating ))
             //create rating fragment
             R.id.rateButton -> {
                 Log.d("RatingButtonDebug","rating button clicked")
