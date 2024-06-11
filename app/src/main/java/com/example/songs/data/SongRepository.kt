@@ -1,6 +1,7 @@
 package com.example.songs.data
 
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import com.example.songs.model.*
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +16,7 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     // Observed Flow will notify the observer when the data has changed.
     val allSongs: Flow<List<Song>> = songDao.getAllSongs()
     val allRatings: Flow<List<Rating>> = ratingDao.getAllRatings()
-    val allArtists: Flow<List<Artist>> = artistDao.getAllArtists()
+    val allArtists: LiveData<List<Artist>> = artistDao.getAllArtists()
     val allSongsWithRatings: Flow<List<SongWithRatings>> = songDao.getAllSongsWithRatings()
     val allListWithRatings: Flow<List<SongListWithRatings>> = listSongM2MDao.getAllListWithRatings()
     //All I need is a list of names

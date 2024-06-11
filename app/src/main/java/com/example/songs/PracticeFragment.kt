@@ -30,12 +30,6 @@ class PracticeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_practice, container, false)
     }
 
-    override fun onResume() {
-
-        super.onResume()
-        songViewModel.currentSetListLive.value
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Inflate the layout for this fragment
@@ -55,15 +49,15 @@ class PracticeFragment : Fragment() {
             //songViewModel.sortByTimestamp()
         }
 
-        songViewModel.currentListLive.observe(this) { currentListLive ->
+        songViewModel.currentListLive.observe(viewLifecycleOwner) { currentListLive ->
             Log.d("PracticeFragment LiveData","Current list live is updated")
             Log.d("PracticeFragment LiveData",currentListLive.setList.listName)
 
         }
         songViewModel.currentSetListLive.observe(viewLifecycleOwner){songList ->
             Log.d("LiveDataDebug","currentSetListLive observer called in PracticeFragment")
-            Log.d("currentListDebug", songList.setList.listName)
-            adapter.submitList(songList.songList)
+            songList?.setList?.listName?.let { Log.d("currentListDebug", it) }
+            adapter.submitList(songList?.songList)
 
         }
         songViewModel.practiceList.observe(viewLifecycleOwner) { song ->

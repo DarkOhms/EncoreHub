@@ -66,7 +66,8 @@
             app:destination="@id/practiceFragment" />
         <action
             android:id="@+id/action_practice_or_Perform_to_performFragment"
-            app:destination="@id/performFragment" />
+            app:destination="@id/performFragment"
+            app:launchSingleTop="false" />
     </fragment>
     <fragment
         android:id="@+id/profile_and_Artists"

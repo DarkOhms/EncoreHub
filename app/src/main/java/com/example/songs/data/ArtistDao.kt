@@ -1,5 +1,6 @@
 package com.example.songs.data
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.songs.model.Artist
 import com.example.songs.model.ArtistLists
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ArtistDao {
     @Query("SELECT * FROM artist_table")
-    fun getAllArtists(): Flow<List<Artist>>
+    fun getAllArtists(): LiveData<List<Artist>>
 
     //gets a list of artist names
     @Query("SELECT name FROM artist_table")

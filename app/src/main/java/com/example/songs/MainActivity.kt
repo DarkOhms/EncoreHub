@@ -31,6 +31,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.DialogFragment
+import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -49,6 +50,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
     lateinit var allArtists: List<Artist>
     lateinit var currentArtist: Artist
     lateinit var artistListTitles: ArrayList<String>
+    lateinit var navController: NavController
 
     //actionMode variables and callback 11/29/22
     private var mActionMode: ActionMode? = null
@@ -160,8 +162,10 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
 
         songViewModel.currentArtistLive.observe(this) { currentArtistLive ->
             // Update the cached copy of the songs in the adapter.
-            currentArtist = currentArtistLive
-            supportActionBar?.subtitle = currentArtist.name
+            currentArtistLive.let{
+                currentArtist = currentArtistLive
+                supportActionBar?.subtitle = currentArtist.name
+            }
             Log.d("LiveDataDebug","Current artist is " + currentArtist.name)
             Log.d("LiveDataDebug","Current artistId is " + currentArtist.artistId)
 
@@ -177,7 +181,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         //setup bottom navigation
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottomNavigationView)
         val navHostController = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        val navController = navHostController.navController
+        navController = navHostController.navController
         bottomNavigationView.setupWithNavController(navController)
 
         findViewById<Toolbar>(R.id.my_toolbar).setupWithNavController(navController,appBarConfiguration)
@@ -333,10 +337,11 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         // User touched the dialog's positive button
 
         if(TextUtils.isEmpty(newArtist)){
-
+            //handle empty string
         }else{
             val  tempArtist = Artist(newArtist.trim())
             songViewModel.insertArtist(tempArtist)
+            navController.popBackStack(R.id.practice_fragment,true)
         }
 
     }
