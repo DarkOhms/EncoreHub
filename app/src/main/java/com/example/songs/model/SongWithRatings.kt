@@ -34,21 +34,20 @@ data class SongWithRatings @JvmOverloads constructor(
 
 
 fun recentPerformanceRating(): Int{
-    /*  12/8/2021
-        recent performance rating is a metric to asses song readiness
-        calculations will be based on the last 3 performances
-        each performance will be weighted more heavily for
-        how recent they were performed
+    /*  6/14/2024
+    This now works properly for the possibility of zero ratings.
+    Updates will be made to incorporate time intervals and a possible refactor
+    to readiness rating.
      */
     //handle initial cases of 0 through 4
     when (ratingHistory.size) {
         //initial rating with no user input or practice sessions
-        0, 1 -> return 0
+        0 -> return 0
         //user rating with just one practice session
-        2 -> return ratingHistory[1].rating
+        1-> return ratingHistory[0].rating
         //only 2 practice sessions better weighting based on time intervals TO BE ADDED
         //current weighting is 60% for the most recent with 40% for the previous
-        3 -> return ((ratingHistory[1].rating * .4) + (ratingHistory[2].rating *.6)).roundToInt()
+        2 -> return ((ratingHistory[0].rating * .4) + (ratingHistory[1].rating *.6)).roundToInt()
 
         else -> {
             val i: Int = ratingHistory.size
@@ -64,7 +63,11 @@ fun recentPerformanceRating(): Int{
     practiced or performed for comparison purposes
      */
     fun lastPlayed():Duration {
-        return ratingHistory.last().timeStamp.nanoseconds
+        return if (ratingHistory.isEmpty()){
+            Duration.ZERO
+        }else{
+            ratingHistory.last().timeStamp.nanoseconds
+        }
     }
 
     fun lastPlayedString(): String{

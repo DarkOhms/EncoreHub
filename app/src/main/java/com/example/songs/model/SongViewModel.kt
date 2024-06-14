@@ -9,21 +9,6 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SongViewModel(private val repository: SongRepository) : ViewModel() {
-    // Using LiveData and caching what allSongsWithRatings returns has several benefits:
-    // - We can put an observer on the data (instead of polling for changes) and only update the
-    //   the UI when the data actually changes.
-    // - Repository is completely separated from the UI through the ViewModel.
-
-
-    /*
-    12/19/2022
-    This will need some updating.  I am transitioning to using artistId because
-    it will scale better but right now much is connected to the artistName parameter.
-
-    For now I will have to load from the artist_table to find the ID of by artistName.
-
-    This really should be the other way around.
-     */
 
     val allArtists: LiveData<List<Artist>> =  repository.allArtists
 
@@ -74,18 +59,11 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     }
     ////////////
 
-    private var temp = mutableListOf<SongWithRatings>()
-    private val _practiceList = MutableLiveData<List<SongWithRatings>>()
-
-    val practiceList: LiveData<List<SongWithRatings>>
-        get() = _practiceList
-
     //start
     //default list for this phase of production
     val defaultList = SongList("All Songs/Exercises",1)
     val defaultSongListWithRatings = listOf<SongWithRatings>()
 
-    //this results in a default artistId of 0 for currentArtist
     var  currentList: SongListWithRatings  = SongListWithRatings(defaultList,defaultSongListWithRatings)
 
     private val _currentListLive = MutableLiveData<SongListWithRatings>(currentList)
@@ -101,12 +79,50 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         }
     }
 
+    val practiceListLive: LiveData<List<SongWithRatings>> = currentSetListLive.map {
+
+        it?.songList.apply {
+            sortByFunction.value.let { sortByFunction ->
+                if (it != null && !it.songList.isNullOrEmpty()) {
+                    if (sortByFunction != null) {
+                        return@map sortByFunction(it.songList)
+                    }
+                }
+            }
+        }!!
+
+    }
+    //generic way to trigger a sort
+    val triggerSort = MutableLiveData<Boolean>()
+    //initial sort function by performance rating
+    val sortByFunction: MutableLiveData<(List<SongWithRatings>) -> List<SongWithRatings>> = MutableLiveData{
+        it.sortedByDescending { songWithRatings -> songWithRatings.recentPerformanceRating() }
+    }
+
+    //sorted when triggerSort changes
+    /*
+    val sortedPracticeListLive: LiveData<List<SongWithRatings>> = triggerSort.switchMap {
+        return@switchMap practiceListLive.map {songWithRatings ->
+            triggerSort.value = false
+            sortByFunction.value?.let { sortByFunction ->
+                sortByFunction(songWithRatings)
+            }
+            songWithRatings
+
+        }
+    }
+
+     */
+
+    fun setSortByFunction(sortByFunction: (List<SongWithRatings>) -> List<SongWithRatings>) {
+        this.sortByFunction.value = sortByFunction
+    }
+
     //end
 
 
 
     init {
-        _practiceList.value = temp
         //this initializes the currentArtistLive
         viewModelScope.launch {
             repository.allArtists.observeForever {
@@ -185,6 +201,15 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         Log.d("insertArtist"," artistId = " + artistId)
         val newMasterList = SongList("All Songs/Exercises",artistId)
         val listId = repository.insertList(newMasterList)
+        /*
+            handling this in with initializeWithArtist was not working
+            allArtistListsWithRatings.value would return null
+            this is presumably because the list was not finished being inserted
+            handling it here seems to ensure that the list is inserted before
+            initializing the currentList could the same be done if initializeWithArtist
+            were launched in the viewModelScope???
+        */
+
         allArtistListsWithRatings.value?.find { it.setList.listId == listId }?.let {currentList = it }
         _currentListLive.value = currentList
         changeNewArtist(artist,artistId)
@@ -354,28 +379,23 @@ A side, B side tempo
                 it.recentPerformanceRating()
             }
             //list sorted by performance rating
-            _practiceList.value = newList.sortedByDescending{ it.recentPerformanceRating() } as MutableList<SongWithRatings>
-            practiceList.value
 
         }
 
     }
     fun sortByTimestamp(){
-        var newList = mutableListOf<SongWithRatings>()
-        newList = currentListLive.value?.songList as MutableList<SongWithRatings>
 
-        //make sure the list isn't empty
-        if(newList.isNullOrEmpty()){
-            //handle empty list error
-        }else{
-            //sort list by performance rating
-            //update song ratings
-            newList.forEach(){
-                it.lastPlayed()
-            }
-            //list sorted by performance rating
-            _practiceList.value = newList.sortedBy { it.lastPlayed() } as MutableList<SongWithRatings>
-            practiceList.value
+        Log.d("sortByTimestamp","called")
+        sortByFunction.value = {
+            it.sortedByDescending { songWithRatings -> songWithRatings.lastPlayed()}
+        }    //list sorted by performance rating
+
+    }
+
+    fun sortByPerformanceRating(){
+        Log.d("sortByPerformanceRating","called")
+        sortByFunction.value = {
+            it.sortedByDescending { songWithRatings -> songWithRatings.recentPerformanceRating() }
         }
     }
 

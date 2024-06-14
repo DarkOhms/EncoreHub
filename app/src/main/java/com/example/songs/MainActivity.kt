@@ -129,6 +129,9 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         setSupportActionBar(findViewById(R.id.my_toolbar))
 
         //initialize LiveData observers
+        songViewModel.sortByFunction.observe(this){
+            Log.d("LiveDataDebug","Sort by function is " + it.toString())
+        }
         songViewModel.allArtists.observe(this){
             allArtists = it
         }
@@ -151,7 +154,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         }
 
         songViewModel.allSongsWithRatings.observe(this){
-            //songViewModel.initializeWithArtist()
+
         }
 
         songViewModel.currentListLive.observe(this) { currentListLive ->
@@ -281,7 +284,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
                     setPositiveButton(R.string.ratingSort,
                         DialogInterface.OnClickListener { dialog, id ->
                             // User clicked OK button
-                            songViewModel.createPracticeList()
+                            songViewModel.sortByPerformanceRating()
                         })
                     setNeutralButton(R.string.freshnessSort,
                         DialogInterface.OnClickListener { dialog, id ->

@@ -57,13 +57,19 @@ class PracticeFragment : Fragment() {
         songViewModel.currentSetListLive.observe(viewLifecycleOwner){songList ->
             Log.d("LiveDataDebug","currentSetListLive observer called in PracticeFragment")
             songList?.setList?.listName?.let { Log.d("currentListDebug", it) }
-            adapter.submitList(songList?.songList)
+            //adapter.submitList(songList?.songList)
 
         }
-        songViewModel.practiceList.observe(viewLifecycleOwner) { song ->
-            // Update the cached copy of the songs in the adapter.
-            //song.let { adapter.submitList(it) }
+        songViewModel.practiceListLive.observe(viewLifecycleOwner) { song ->
+            song.let { adapter.submitList(it) }
         }
+        /*
+        songViewModel.sortedPracticeListLive.observe(viewLifecycleOwner) { song ->
+            // Update the cached copy of the songs in the adapter.
+            song.let { adapter.submitList(it) }
+        }
+
+         */
 
     }
 
