@@ -60,16 +60,10 @@ class PracticeFragment : Fragment() {
             //adapter.submitList(songList?.songList)
 
         }
+
         songViewModel.practiceListLive.observe(viewLifecycleOwner) { song ->
             song.let { adapter.submitList(it) }
         }
-        /*
-        songViewModel.sortedPracticeListLive.observe(viewLifecycleOwner) { song ->
-            // Update the cached copy of the songs in the adapter.
-            song.let { adapter.submitList(it) }
-        }
-
-         */
 
     }
 

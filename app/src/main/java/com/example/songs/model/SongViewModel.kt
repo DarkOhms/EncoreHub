@@ -78,44 +78,54 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             list.find { it.setList.listId == currentList.setList.listId }
         }
     }
-
-    val practiceListLive: LiveData<List<SongWithRatings>> = currentSetListLive.map {
-
-        it?.songList.apply {
-            sortByFunction.value.let { sortByFunction ->
-                if (it != null && !it.songList.isNullOrEmpty()) {
-                    if (sortByFunction != null) {
-                        return@map sortByFunction(it.songList)
-                    }
-                }
-            }
-        }!!
-
-    }
-    //generic way to trigger a sort
-    val triggerSort = MutableLiveData<Boolean>()
     //initial sort function by performance rating
-    val sortByFunction: MutableLiveData<(List<SongWithRatings>) -> List<SongWithRatings>> = MutableLiveData{
+
+    val practiceSortByFunction: MutableLiveData<(List<SongWithRatings>) -> List<SongWithRatings>> = MutableLiveData{
         it.sortedByDescending { songWithRatings -> songWithRatings.recentPerformanceRating() }
     }
 
-    //sorted when triggerSort changes
-    /*
-    val sortedPracticeListLive: LiveData<List<SongWithRatings>> = triggerSort.switchMap {
-        return@switchMap practiceListLive.map {songWithRatings ->
-            triggerSort.value = false
-            sortByFunction.value?.let { sortByFunction ->
-                sortByFunction(songWithRatings)
-            }
-            songWithRatings
+    val performSortByFunction: MutableLiveData<(List<SongWithRatings>) -> List<SongWithRatings>> = MutableLiveData{
+        it.sortedByDescending { songWithRatings -> songWithRatings.recentPerformanceRating() }
+    }
 
+    val performFilterFunction: MutableLiveData<(List<SongWithRatings>) -> List<SongWithRatings>> = MutableLiveData{
+        it.filter { songWithRatings -> (songWithRatings.recentPerformanceRating() > 77) }
+    }
+
+    val practiceListLive = MediatorLiveData<List<SongWithRatings>>().apply{
+
+        addSource(practiceSortByFunction) {sortByFunction ->
+            value = currentListLive.value?.songList?.let { songList ->
+                sortByFunction?.invoke(songList)
+            }
+        }
+        addSource(currentListLive) {list ->
+            value = list.songList.let { songList ->
+                practiceSortByFunction.value?.invoke(songList)
+            }
         }
     }
 
-     */
+    val performanceListLive = MediatorLiveData<List<SongWithRatings>>().apply{
 
-    fun setSortByFunction(sortByFunction: (List<SongWithRatings>) -> List<SongWithRatings>) {
-        this.sortByFunction.value = sortByFunction
+        addSource(performSortByFunction) {sortByFunction ->
+            value = currentListLive.value?.songList?.let { songList ->
+                sortByFunction?.invoke(songList)
+            }
+        }
+        addSource(performFilterFunction){filterFunction ->
+            value = currentListLive.value?.songList?.let { songList ->
+                val filtered = filterFunction?.invoke(songList)
+                performSortByFunction.value?.invoke(filtered!!)
+            }
+        }
+        addSource(currentListLive) {list ->
+            value = list.songList.let { songList ->
+                //filter then sort
+                val filtered = performFilterFunction.value?.invoke(songList)
+                performSortByFunction.value?.invoke(filtered!!)
+            }
+        }
     }
 
     //end
@@ -386,7 +396,7 @@ A side, B side tempo
     fun sortByTimestamp(){
 
         Log.d("sortByTimestamp","called")
-        sortByFunction.value = {
+        practiceSortByFunction.value = {
             it.sortedByDescending { songWithRatings -> songWithRatings.lastPlayed()}
         }    //list sorted by performance rating
 
@@ -394,7 +404,7 @@ A side, B side tempo
 
     fun sortByPerformanceRating(){
         Log.d("sortByPerformanceRating","called")
-        sortByFunction.value = {
+        practiceSortByFunction.value = {
             it.sortedByDescending { songWithRatings -> songWithRatings.recentPerformanceRating() }
         }
     }

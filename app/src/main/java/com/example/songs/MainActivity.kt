@@ -129,9 +129,7 @@ class MainActivity : AppCompatActivity(),NewSongFragment.NewSongListener, NewArt
         setSupportActionBar(findViewById(R.id.my_toolbar))
 
         //initialize LiveData observers
-        songViewModel.sortByFunction.observe(this){
-            Log.d("LiveDataDebug","Sort by function is " + it.toString())
-        }
+
         songViewModel.allArtists.observe(this){
             allArtists = it
         }

@@ -63,6 +63,7 @@
 
     <!--initialization strings-->
     <string name="all_songs_exercises">All Songs/Exercises</string>
+    <string name="list_name">List Name</string>
 
 
 </resources>
