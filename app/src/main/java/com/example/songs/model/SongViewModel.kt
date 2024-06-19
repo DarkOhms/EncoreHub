@@ -136,8 +136,8 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         //this initializes the currentArtistLive
         viewModelScope.launch {
             repository.allArtists.observeForever {
-                _currentArtistLive.value = it.firstOrNull()
                 if(it.isNotEmpty()){
+                    _currentArtistLive.value = it.firstOrNull()
                     repository.allArtists.removeObserver{}
                 }
             }
@@ -406,6 +406,12 @@ A side, B side tempo
         Log.d("sortByPerformanceRating","called")
         practiceSortByFunction.value = {
             it.sortedByDescending { songWithRatings -> songWithRatings.recentPerformanceRating() }
+        }
+    }
+
+    fun setRatingFilterValue(newVal: Int) {
+        performFilterFunction.value = {
+            it.filter { songWithRatings -> (songWithRatings.recentPerformanceRating() > newVal) }
         }
     }
 

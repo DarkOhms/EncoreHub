@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.NumberPicker
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -41,6 +42,13 @@ class PerformFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
         recyclerView.setHasFixedSize(true)
 
+        val numberPicker = view.findViewById<NumberPicker>(R.id.number_picker)
+        numberPicker.minValue = 65
+        numberPicker.maxValue = 100
+
+        numberPicker.setOnValueChangedListener { _, _, newVal ->
+            songViewModel.setRatingFilterValue(newVal)
+        }
 
         //observe changes to allSongs to update practice list
         songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner){
