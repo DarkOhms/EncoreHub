@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.lukemartinrecords.encorehub" />
+                  <option name="mobileSdkAppId" value="1:564167629945:android:21ac7cadabed41a23f88a8" />
+                  <option name="projectId" value="encorehub-f76b5" />
+                  <option name="projectNumber" value="564167629945" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

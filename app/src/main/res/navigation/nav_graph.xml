@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="com.example.songs.MainFragment"
+        android:name="com.lukemartinrecords.encorehub.MainFragment"
         android:label="Songs Main"
         tools:layout="@layout/fragment_main" >
         <action
@@ -30,7 +30,7 @@
     </fragment>
     <fragment
         android:id="@+id/practiceFragment"
-        android:name="com.example.songs.PracticeFragment"
+        android:name="com.lukemartinrecords.encorehub.PracticeFragment"
         android:label="Practice"
         tools:layout="@layout/fragment_practice" >
         <action
@@ -45,11 +45,11 @@
     </fragment>
     <fragment
         android:id="@+id/newSongFragment"
-        android:name="com.example.songs.NewSongFragment"
+        android:name="com.lukemartinrecords.encorehub.NewSongFragment"
         android:label="NewSongFragment" />
     <fragment
         android:id="@+id/performFragment"
-        android:name="com.example.songs.PerformFragment"
+        android:name="com.lukemartinrecords.encorehub.PerformFragment"
         android:label="Perform"
         tools:layout="@layout/fragment_perform" >
         <action
@@ -58,7 +58,7 @@
     </fragment>
     <fragment
         android:id="@+id/practice_or_Perform"
-        android:name="com.example.songs.PracticeOrPerform"
+        android:name="com.lukemartinrecords.encorehub.PracticeOrPerform"
         android:label="Practice and Performance"
         tools:layout="@layout/fragment_practice_or__perform" >
         <action
@@ -71,27 +71,27 @@
     </fragment>
     <fragment
         android:id="@+id/profile_and_Artists"
-        android:name="com.example.songs.Profile_and_Artists"
+        android:name="com.lukemartinrecords.encorehub.Profile_and_Artists"
         android:label="Artist Profile"
         tools:layout="@layout/fragment_profile_and__artists" />
     <fragment
         android:id="@+id/stats"
-        android:name="com.example.songs.Stats"
+        android:name="com.lukemartinrecords.encorehub.Stats"
         android:label="Stats"
         tools:layout="@layout/fragment_stats" />
     <fragment
         android:id="@+id/songFragment"
-        android:name="com.example.songs.SongFragment"
+        android:name="com.lukemartinrecords.encorehub.SongFragment"
         android:label="fragment_song"
         tools:layout="@layout/fragment_song" />
     <fragment
         android:id="@+id/ratingFragment"
-        android:name="com.example.songs.RatingFragment"
+        android:name="com.lukemartinrecords.encorehub.RatingFragment"
         android:label="fragment_rating"
         tools:layout="@layout/fragment_rating" />
     <fragment
         android:id="@+id/ratingHistoryFragment"
-        android:name="com.example.songs.RatingHistoryFragment"
+        android:name="com.lukemartinrecords.encorehub.RatingHistoryFragment"
         android:label="Rating History"
         tools:layout="@layout/fragment_rating_history">
         <argument
