@@ -3,17 +3,18 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
 
 
 }
 
 android {
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.lukemartinrecords.encorehub"
-        minSdk 23
-        targetSdk 31
+        minSdk 26
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -47,13 +48,14 @@ android {
 
     kotlinOptions {
         jvmTarget = '1.8'
-        freeCompilerArgs = ['-Xjvm-default=compatibility']
+        freeCompilerArgs = ['-Xjvm-default=all-compatibility']
     }
 
     buildFeatures {
         dataBinding true
         viewBinding true
     }
+    namespace 'com.lukemartinrecords.encorehub'
 }
 
 dependencies {
@@ -88,6 +90,21 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
     implementation "com.google.android.material:material:$rootProject.materialVersion"
 
+
+    //firebase for authentication
+    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+
+    // TODO: Add the dependencies for Firebase products you want to use
+
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation "com.google.firebase:firebase-auth-ktx:$firebaseAuthKtxVersion"
+    implementation "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+
+    implementation "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
+
+
     // Testing
     testImplementation "junit:junit:$rootProject.junitVersion"
     androidTestImplementation "androidx.arch.core:core-testing:$rootProject.coreTestingVersion"
@@ -117,7 +134,6 @@ dependencies {
     implementation 'androidx.room:room-paging:2.4.3'
 }
 dependencies {
-
 
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'

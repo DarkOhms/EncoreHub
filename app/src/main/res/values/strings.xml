@@ -65,5 +65,8 @@
     <string name="all_songs_exercises">All Songs/Exercises</string>
     <string name="list_name">List Name</string>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="default_web_client_id" translatable="false">webClientId.apps.googleusercontent.com</string>
+
 
 </resources>

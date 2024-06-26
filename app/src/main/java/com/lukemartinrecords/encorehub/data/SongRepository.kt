@@ -96,8 +96,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun deleteSong(songId:Long) {
-        songDao.deleteSong(songId)
+    suspend fun deleteSong(song: Song) {
+        songDao.deleteSong(song)
     }
 
     @Suppress("RedundantSuspendModifier")

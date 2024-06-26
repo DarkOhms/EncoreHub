@@ -33,8 +33,8 @@ interface SongDao {
     fun deleteAll()
 
     //now appropriately using the songId to delete the song
-    @Query("DELETE FROM SONG_TABLE WHERE songId = :songId")
-    suspend fun deleteSong(songId: Long)
+    @Delete
+    suspend fun deleteSong(song: Song)
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateSong(song: Song)

@@ -39,7 +39,9 @@ data class Song(
 
 ){
     //constructor without bpm
+    @Ignore
     constructor(songTitle: String, artistId: Long) : this(0, songTitle, artistId, 321, "")
     //constructor with bpm
+    @Ignore
     constructor(songTitle: String, artistId: Long, bpm: Int ) : this(0,songTitle, artistId, bpm, "")
 }

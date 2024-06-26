@@ -228,8 +228,8 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         repository.deleteAll()
     }
 
-    fun deleteSong(songId: Long) = viewModelScope.launch {
-        repository.deleteSong(songId)
+    fun deleteSong(song:Song) = viewModelScope.launch {
+        repository.deleteSong(song)
     }
 
     //deletes selected songs within the scope of the current artist
@@ -237,7 +237,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         if(!allArtistSongsWithRatings.value.isNullOrEmpty()){
             val selected: List<SongWithRatings> = allArtistSongsWithRatings.value!!.filter { it.isSelected }
             //using artistSong for deletion 12/8/22
-            selected.forEach { deleteSong(it.song.songId) }
+            selected.forEach { deleteSong(it.song) }
         }
 
     }

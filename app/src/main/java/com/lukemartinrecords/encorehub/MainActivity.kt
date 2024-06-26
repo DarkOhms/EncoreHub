@@ -29,17 +29,36 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.firebase.ui.auth.AuthUI
 import com.lukemartinrecords.encorehub.adapter.ItemAdapter
 import com.lukemartinrecords.encorehub.model.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
+import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
+import com.lukemartinrecords.encorehub.ui.login.LoginViewModel
 
 class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewArtistFragment.NewArtistListener {
 
+
+    //login variables
+    private val loginViewModel by viewModels<LoginViewModel>()
+    private var isLoggedIn = false
+
+    var user = FirebaseAuth.getInstance().currentUser
+
+    private val signInLauncher = registerForActivityResult(
+        FirebaseAuthUIActivityResultContract()
+    ) { result ->
+        onSignInResult(result)
+    }
+    //end login variables
 
     private val songViewModel: SongViewModel by viewModels {
         SongViewModelFactory((application as EncoreHubApplication).repository)
@@ -128,6 +147,19 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
 
         //initialize LiveData observers
 
+        loginViewModel.authenticationState.observe(this, Observer{ authenticationState ->
+            when(authenticationState){
+                LoginViewModel.AuthenticationState.AUTHENTICATED ->{
+                    //add logout button
+                    isLoggedIn = true
+                }else ->{
+                //remove logout button
+                isLoggedIn = false
+                launchSignInFlow()
+            }
+            }
+        })
+
         songViewModel.allArtists.observe(this){
             allArtists = it
         }
@@ -187,7 +219,38 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
         setupActionBarWithNavController(navController,appBarConfiguration)
 
 
+    }//end onCreate
+
+    //login methods
+    private fun onSignInResult(result: FirebaseAuthUIAuthenticationResult) {
+        val response = result.idpResponse
+        if (result.resultCode == RESULT_OK) {
+            // Successfully signed in
+            user = FirebaseAuth.getInstance().currentUser
+            Log.d("SignIn", user?.displayName.toString())
+            // ...
+        } else {
+            // Sign in failed. If response is null the user canceled the
+            // sign-in flow using the back button. Otherwise check
+            // response.getError().getErrorCode() and handle the error.
+            // ...
+        }
     }
+    private fun launchSignInFlow() {
+        val providers = arrayListOf(
+            AuthUI.IdpConfig.EmailBuilder().build(),
+            AuthUI.IdpConfig.GoogleBuilder().build()
+        )
+
+        val signInIntent = AuthUI.getInstance()
+            .createSignInIntentBuilder()
+            .setAvailableProviders(providers)
+            .build()
+
+        signInLauncher.launch(signInIntent)
+    }
+    //end login methods
+
     fun startActionMode(adapter: ItemAdapter) {
 
         actionAdapter = adapter
