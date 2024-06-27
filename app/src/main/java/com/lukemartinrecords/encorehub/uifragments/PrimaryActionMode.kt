@@ -1,11 +1,10 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
 import android.view.ActionMode
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.MenuRes
-
 
 class PrimaryActionMode: ActionMode.Callback {
 

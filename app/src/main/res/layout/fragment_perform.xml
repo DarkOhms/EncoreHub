@@ -9,7 +9,7 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
     android:paddingBottom="?attr/actionBarSize"
-    tools:context=".PerformFragment">
+    tools:context=".uifragments.PerformFragment">
 
 
     <!-- This will hold the list name and be styled nicely -->

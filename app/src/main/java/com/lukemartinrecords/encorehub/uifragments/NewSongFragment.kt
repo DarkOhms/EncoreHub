@@ -1,22 +1,22 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
-import androidx.appcompat.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import android.view.*
-import androidx.fragment.app.Fragment
+import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.lukemartinrecords.encorehub.EncoreHubApplication
+import com.lukemartinrecords.encorehub.R
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
-
 
 /**
  * A simple [Fragment] subclass.
@@ -78,7 +78,7 @@ class NewSongFragment : DialogFragment() {
             //this next line has to be here and not inside the onClick
             val tempoEditText = view?.findViewById<EditText>(R.id.newSongBpm)
 
-            val arrayAdapter = ArrayAdapter(requireContext(),R.layout.dropdown_item, songTitles)
+            val arrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, songTitles)
             val songAutoComplete = view?.findViewById<AutoCompleteTextView>(R.id.newSongTitle)
             songAutoComplete?.setAdapter(arrayAdapter)
             songAutoComplete?.onItemClickListener = object : AdapterView.OnItemClickListener {
@@ -101,7 +101,7 @@ class NewSongFragment : DialogFragment() {
             builder
                 .setView(view)
                 .setCancelable(true)
-                .setNegativeButton(R.string.cancel,DialogInterface.OnClickListener { dialog, id ->
+                .setNegativeButton(R.string.cancel, DialogInterface.OnClickListener { dialog, id ->
                     dialog?.cancel()
                 })
                 .setPositiveButton(R.string.button_save)

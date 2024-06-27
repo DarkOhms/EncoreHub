@@ -1,4 +1,4 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
 import android.app.Dialog
 import android.content.Context
@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.lukemartinrecords.encorehub.R
 
 class NewArtistFragment: DialogFragment() {
     lateinit var listener: NewArtistListener

@@ -1,14 +1,15 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.Editable
 import android.text.SpannableStringBuilder
-import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.lukemartinrecords.encorehub.EncoreHubApplication
+import com.lukemartinrecords.encorehub.R
 import com.lukemartinrecords.encorehub.databinding.FragmentSongBinding
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
@@ -52,7 +53,8 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
                 builder.apply {
                     setMessage("Are you sure you want to save?")
                     setIcon(R.drawable.ic_baseline_warning_24)
-                    setPositiveButton(R.string.button_save,
+                    setPositiveButton(
+                        R.string.button_save,
                         DialogInterface.OnClickListener { dialog, id ->
                             // User clicked saved button, implement save logic
 
@@ -62,7 +64,8 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
 
 
                         })
-                    setNegativeButton(R.string.cancel,
+                    setNegativeButton(
+                        R.string.cancel,
                         DialogInterface.OnClickListener { dialog, id ->
                             // User cancelled the dialog
                         })
@@ -83,7 +86,8 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
                 builder.apply {
                     setMessage("Are you sure you want to delete?")
                     setIcon(R.drawable.ic_baseline_warning_24)
-                    setPositiveButton(R.string.confirm,
+                    setPositiveButton(
+                        R.string.confirm,
                         DialogInterface.OnClickListener { dialog, id ->
                             // User clicked saved button, implement delete logic
                             // Deletes the song and it's ratings and list associations
@@ -91,7 +95,8 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
                             getDialog()?.cancel()
 
                         })
-                    setNegativeButton(R.string.cancel,
+                    setNegativeButton(
+                        R.string.cancel,
                         DialogInterface.OnClickListener { dialog, id ->
                             // User cancelled the dialog
                             getDialog()?.cancel()

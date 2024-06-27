@@ -14,9 +14,9 @@
             android:title="@string/menu_delete_songs"
             app:showAsAction="never"/>
         <item
-            android:id="@+id/action_nuke_database"
-            android:title="Nuke Database"
-            app:showAsAction="never"/>
+            android:id="@+id/testing_action"
+            android:title="Testing Action"
+            app:showAsAction="never" />
 
 
 </menu>

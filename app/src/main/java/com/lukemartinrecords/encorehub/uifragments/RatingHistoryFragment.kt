@@ -1,20 +1,21 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.lukemartinrecords.encorehub.EncoreHubApplication
+import com.lukemartinrecords.encorehub.R
 import com.lukemartinrecords.encorehub.adapter.RatingAdapter
 import com.lukemartinrecords.encorehub.databinding.FragmentRatingHistoryBinding
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 import com.lukemartinrecords.encorehub.model.SongWithRatings
-
 
 /**
  * A simple [Fragment] subclass.

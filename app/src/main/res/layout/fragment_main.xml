@@ -8,7 +8,7 @@
     android:paddingTop="?attr/actionBarSize"
     android:paddingBottom="?attr/actionBarSize"
     app:subtitle="All Songs"
-    tools:context=".MainFragment">
+    tools:context=".uifragments.MainFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"

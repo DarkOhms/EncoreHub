@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:paddingTop="?attr/actionBarSize"
     android:paddingBottom="?attr/actionBarSize"
-    tools:context=".PracticeFragment">
+    tools:context=".uifragments.PracticeFragment">
 
     <!-- TODO: Update blank fragment layout -->
 

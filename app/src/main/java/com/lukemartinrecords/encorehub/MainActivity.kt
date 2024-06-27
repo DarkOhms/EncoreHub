@@ -43,6 +43,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.lukemartinrecords.encorehub.ui.login.LoginViewModel
+import com.lukemartinrecords.encorehub.uifragments.NewArtistFragment
+import com.lukemartinrecords.encorehub.uifragments.NewSongFragment
+import com.lukemartinrecords.encorehub.uifragments.SetListFragment
+import com.lukemartinrecords.encorehub.utils.sendNotification
 
 class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewArtistFragment.NewArtistListener {
 
@@ -312,15 +316,18 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
             true
         }
 
-        R.id.action_nuke_database -> {
+        //I'll use this for testing different things throughout the app development
+        R.id.testing_action -> {
             // User chose new list option
             val alertDialog: AlertDialog? = this.let {
                 val builder = AlertDialog.Builder(it)
                 builder.apply {
-                    setPositiveButton(R.string.delete,
+                    setPositiveButton(
+                        getString(R.string.testing),
                         DialogInterface.OnClickListener { dialog, id ->
                             // User clicked OK button
-                            //(application as EncoreHubApplication).nukeDatabase()
+                            sendNotification(this@MainActivity)
+
                         })
                     setNegativeButton(R.string.cancel,
                         DialogInterface.OnClickListener { dialog, id ->

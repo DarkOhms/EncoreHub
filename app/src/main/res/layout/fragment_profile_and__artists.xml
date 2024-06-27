@@ -8,7 +8,7 @@
     android:paddingTop="?attr/actionBarSize"
     android:paddingBottom="?attr/actionBarSize"
     app:subtitle="User"
-    tools:context=".Profile_and_Artists">
+    tools:context=".uifragments.Profile_and_Artists">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView

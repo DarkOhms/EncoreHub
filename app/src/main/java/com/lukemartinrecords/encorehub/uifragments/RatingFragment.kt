@@ -1,27 +1,27 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Button
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
+import com.lukemartinrecords.encorehub.EncoreHubApplication
+import com.lukemartinrecords.encorehub.R
 import com.lukemartinrecords.encorehub.databinding.FragmentRatingBinding
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 import com.lukemartinrecords.encorehub.model.SongWithRatings
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [RatingFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+// TODO: Rename parameter arguments, choose names that match
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
 class RatingFragment : DialogFragment(R.layout.fragment_rating) {
     private lateinit var param1song: SongWithRatings
     lateinit var binding: FragmentRatingBinding
@@ -61,7 +61,7 @@ class RatingFragment : DialogFragment(R.layout.fragment_rating) {
         */
 
         //determine currentDestination fragment for action then navigate
-        if(findNavController().currentDestination?.id==R.id.mainFragment) {
+        if(findNavController().currentDestination?.id== R.id.mainFragment) {
             val action =
                 MainFragmentDirections.actionMainFragmentToRatingHistoryFragment(song.song.songTitle)
 

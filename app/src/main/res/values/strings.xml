@@ -67,6 +67,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="default_web_client_id" translatable="false">webClientId.apps.googleusercontent.com</string>
+    <string name="practice_reminder1">Let\'s practice!</string>
+    <string name="testing">Testing</string>
 
 
 </resources>

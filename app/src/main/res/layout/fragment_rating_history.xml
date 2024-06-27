@@ -9,7 +9,7 @@
     android:orientation="vertical"
     android:paddingTop="?attr/actionBarSize"
     android:paddingBottom="?attr/actionBarSize"
-    tools:context=".RatingHistoryFragment">
+    tools:context=".uifragments.RatingHistoryFragment">
 
     <LinearLayout
         android:layout_width="match_parent"

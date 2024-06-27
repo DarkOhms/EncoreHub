@@ -1,22 +1,26 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Button
+import android.widget.Spinner
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import com.lukemartinrecords.encorehub.EncoreHubApplication
+import com.lukemartinrecords.encorehub.R
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 
-
 class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-    private val songViewModel: SongViewModel by activityViewModels {SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository)}
+    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
 
     lateinit var navController: NavController
     lateinit var spinnerDialog: Spinner
@@ -47,7 +51,7 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
 
         songViewModel.allArtistListsWithRatings.observe(viewLifecycleOwner){
             listNames = songViewModel.getListTitles()
-            val arrayAdapter = ArrayAdapter(requireContext(),R.layout.dropdown_item, listNames)
+            val arrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, listNames)
             spinnerDialog.onItemSelectedListener = this
             spinnerDialog.adapter = arrayAdapter
         }
@@ -74,13 +78,13 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
 
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
-        Log.d("SpinnerDebug","You selected " + listNames[index] )
+        Log.d("SpinnerDebug", "You selected " + listNames[index])
         songViewModel.changeListByName(listNames[index])
 
     }
 
     override fun onNothingSelected(p0: AdapterView<*>?) {
-        Log.d("SpinnerDebug","You selected nothing")
+        Log.d("SpinnerDebug", "You selected nothing")
     }
 
 }

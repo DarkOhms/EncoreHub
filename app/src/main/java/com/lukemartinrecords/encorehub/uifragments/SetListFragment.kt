@@ -1,27 +1,28 @@
-package com.lukemartinrecords.encorehub
+package com.lukemartinrecords.encorehub.uifragments
 
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.lukemartinrecords.encorehub.EncoreHubApplication
+import com.lukemartinrecords.encorehub.R
 import com.lukemartinrecords.encorehub.model.Artist
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
-
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [SetListFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+
+// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
 class SetListFragment : DialogFragment() {
 
     //shared view model for use in the fragment
@@ -51,7 +52,8 @@ class SetListFragment : DialogFragment() {
                 .setNegativeButton(R.string.cancel, DialogInterface.OnClickListener { dialog, id ->
                     dialog?.cancel()
                 })
-                .setPositiveButton(R.string.button_save, DialogInterface.OnClickListener
+                .setPositiveButton(
+                    R.string.button_save, DialogInterface.OnClickListener
                 {dialog, id ->
                     Log.d("Applog", view.toString())
                     val newSetListName = view?.findViewById<EditText>(R.id.newSetListName)?.text
