@@ -50,6 +50,7 @@ import com.lukemartinrecords.encorehub.utils.sendNotification
 
 class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewArtistFragment.NewArtistListener {
 
+    val TAG = "MainActivity"
 
     //login variables
     private val loginViewModel by viewModels<LoginViewModel>()
@@ -169,29 +170,23 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
         }
 
         //initialize viewModel with initial artist this will change with login functionality
-        songViewModel.changeArtist("Student")
+        //songViewModel.changeArtist("Student")
 
         songViewModel.allListsWithRatings.observe(this){
 
         }
         songViewModel.allArtistListsWithRatings.observe(this){
-            Log.d("LiveDataDebug","AllArtistListsWithRatings is observed")
-            Log.d("LiveDataDebug","size of list is " + it.size.toString())
+            Log.d(TAG,"AllArtistListsWithRatings is observed")
+            Log.d(TAG,"size of list is " + it.size.toString())
         //this causes an unending loop
 
             val itit = it.iterator()
             while (itit.hasNext())
-              Log.d("LiveDataDebug","  AllArtistListsWithRatings         " + itit.next().setList.listName)
+              Log.d(TAG,"  AllArtistListsWithRatings         " + itit.next().setList.listName)
 
         }
 
         songViewModel.allSongsWithRatings.observe(this){
-
-        }
-
-        songViewModel.currentListLive.observe(this) { currentListLive ->
-            Log.d("MainActivity LiveData","Current list live is updated")
-            Log.d("MainActivity LiveData",currentListLive.setList.listName)
 
         }
 
@@ -201,8 +196,8 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
                 currentArtist = currentArtistLive
                 supportActionBar?.subtitle = currentArtist.name
             }
-            Log.d("LiveDataDebug","Current artist is " + currentArtist.name)
-            Log.d("LiveDataDebug","Current artistId is " + currentArtist.artistId)
+            Log.d(TAG,"Current artist is " + currentArtist.name)
+            Log.d(TAG,"Current artistId is " + currentArtist.artistId)
 
         }
 

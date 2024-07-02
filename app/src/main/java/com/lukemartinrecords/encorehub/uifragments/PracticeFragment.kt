@@ -21,6 +21,7 @@ class PracticeFragment : Fragment() {
 
     //shared view model for use in the fragment
     private val songViewModel: SongViewModel by activityViewModels(){ SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    val TAG = "PracticeFragment"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -50,15 +51,14 @@ class PracticeFragment : Fragment() {
             //songViewModel.sortByTimestamp()
         }
 
-        songViewModel.currentListLive.observe(viewLifecycleOwner) { currentListLive ->
-            Log.d("PracticeFragment LiveData", "Current list live is updated")
-            Log.d("PracticeFragment LiveData", currentListLive.setList.listName)
-
-        }
         songViewModel.currentSetListLive.observe(viewLifecycleOwner){songList ->
-            Log.d("LiveDataDebug", "currentSetListLive observer called in PracticeFragment")
-            songList?.setList?.listName?.let { Log.d("currentListDebug", it) }
-            //adapter.submitList(songList?.songList)
+            Log.d(TAG, "currentSetListLive observer called in PracticeFragment")
+            songList?.setList?.listName?.let { Log.d(TAG, it) }
+            if(songList == null){
+                Log.d(TAG, "songList is null")
+            }else{
+                Log.d(TAG, "songList is not null")
+            }
 
         }
 

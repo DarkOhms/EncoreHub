@@ -56,11 +56,6 @@ class PerformFragment : Fragment() {
 
         }
 
-        songViewModel.currentListLive.observe(viewLifecycleOwner) { currentListLive ->
-            Log.d("PracticeFragment LiveData", "Current list live is updated")
-            Log.d("PracticeFragment LiveData", currentListLive.setList.listName)
-
-        }
         songViewModel.currentSetListLive.observe(viewLifecycleOwner){songList ->
             Log.d("LiveDataDebug", "currentSetListLive observer called in PracticeFragment")
             songList?.setList?.listName?.let { Log.d("currentListDebug", it) }

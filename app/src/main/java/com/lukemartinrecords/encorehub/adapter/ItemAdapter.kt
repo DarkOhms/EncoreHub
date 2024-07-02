@@ -152,6 +152,8 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
             item.expand = !(item.expand)
             notifyItemChanged(position)
             Log.d("Applog", "Click!!! "+ position.toString() +" is " + item.expand.toString() )
+            holder.expand.visibility = if(item.expand)  View.VISIBLE else View.GONE
+
         }
         holder.expand.visibility = if(item.expand)  View.VISIBLE else View.GONE
 

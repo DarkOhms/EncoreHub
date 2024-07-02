@@ -59,21 +59,27 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
     //start
     //default list for this phase of production
+    /*
     val defaultList = SongList("All Songs/Exercises",1)
     val defaultSongListWithRatings = listOf<SongWithRatings>()
 
     var  currentList: SongListWithRatings  = SongListWithRatings(defaultList,defaultSongListWithRatings)
 
-    private val _currentListLive = MutableLiveData<SongListWithRatings>(currentList)
-    val currentListLive: LiveData<SongListWithRatings>
-        get() = _currentListLive
 
-    val currentSetListLive: LiveData<SongListWithRatings?> = currentListLive.switchMap { currentList ->
+     */
+    val listFilter: MutableLiveData<Long> = MutableLiveData<Long>(1)
+
+
+
+    val currentSetListLive: LiveData<SongListWithRatings> by lazy {
+        listFilter.switchMap{ listId ->
 
         Log.d("currentSetListLive","mapping")
-        Log.d("currentSetListLive",currentList.setList.listName + " " + currentList.setList.listId)
+        Log.d("currentSetListLive",listId.toString())
         allListsWithRatings.map { list ->
-            list.find { it.setList.listId == currentList.setList.listId }
+            list.find { it.setList.listId == listId }!!
+        }
+
         }
     }
     //initial sort function by performance rating
@@ -93,31 +99,29 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
     val practiceListLive = MediatorLiveData<List<SongWithRatings>>().apply{
 
         addSource(practiceSortByFunction) {sortByFunction ->
-            value = currentListLive.value?.songList?.let { songList ->
+            value = currentSetListLive.value?.songList?.let { songList ->
                 sortByFunction?.invoke(songList)
             }
         }
-        addSource(currentListLive) {list ->
-            value = list.songList.let { songList ->
-                practiceSortByFunction.value?.invoke(songList)
-            }
+        addSource(currentSetListLive) {list ->
+            value = list.songList.let { songList -> practiceSortByFunction.value?.invoke(songList) }
         }
     }
 
     val performanceListLive = MediatorLiveData<List<SongWithRatings>>().apply{
 
         addSource(performSortByFunction) {sortByFunction ->
-            value = currentListLive.value?.songList?.let { songList ->
+            value = currentSetListLive.value?.songList?.let { songList ->
                 sortByFunction?.invoke(songList)
             }
         }
         addSource(performFilterFunction){filterFunction ->
-            value = currentListLive.value?.songList?.let { songList ->
+            value = currentSetListLive.value?.songList?.let { songList ->
                 val filtered = filterFunction?.invoke(songList)
                 performSortByFunction.value?.invoke(filtered!!)
             }
         }
-        addSource(currentListLive) {list ->
+        addSource(currentSetListLive) {list ->
             value = list.songList.let { songList ->
                 //filter then sort
                 val filtered = performFilterFunction.value?.invoke(songList)
@@ -131,7 +135,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
 
     init {
-        //this initializes the currentArtistLive
+        //this initializes the currentArtistLive to the first artist in the db
         viewModelScope.launch {
             repository.allArtists.observeForever {
                 if(it.isNotEmpty()){
@@ -191,6 +195,10 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
      * Launching a new coroutine to insert the data in a non-blocking way
      * these all interact with the repository
      */
+    /**
+     * Launching a new coroutine to insert the data in a non-blocking way
+     * these all interact with the repository
+     */
     fun insertSong(song: Song) = viewModelScope.launch {
         val songId = repository.insertSong(song)
         //also adding the song to the master list
@@ -218,8 +226,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             were launched in the viewModelScope???
         */
 
-        allArtistListsWithRatings.value?.find { it.setList.listId == listId }?.let {currentList = it }
-        _currentListLive.value = currentList
+        allArtistListsWithRatings.value?.find { it.setList.listId == listId }?.let { listFilter.value= it.setList.listId }
         changeNewArtist(artist,artistId)
 
     }
@@ -255,10 +262,11 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
     fun changeListByName(listName:String){
         Log.d("changeListByName", allArtistListsWithRatings.value.toString())
+        //I will attempt to change by id instead of name this will require conversion
         val currentList = allArtistListsWithRatings.value?.find { it.setList.listName == listName }
         if(currentList != null) {
-            _currentListLive.value = currentList!!
-            Log.d("changeListByName", "currentList = " + currentListLive.value!!.setList.listName)
+            listFilter.value = currentList.setList.listId
+            Log.d("changeListByName", "currentList = " + listFilter.value!!)
         }else {
             Log.d("changeListByName", "currentList is null")
         }
@@ -334,9 +342,8 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         if(allArtistListsWithRatings.value.isNullOrEmpty()){
             Log.d("Initialize Artist","allArtistListsWithRatings.value is currently null")
         }else {
-            allArtistListsWithRatings.value?.get(0)!!.also { currentList = it }
-            _currentListLive.value = currentList
-            Log.d("Initialize Artist", "currentList = " + currentList.setList.listName)
+            allArtistListsWithRatings.value?.get(0)!!.also { listFilter.value = it.setList.listId }
+            Log.d("Initialize Artist", "currentList = " + listFilter.value.toString())
         }
 
     }
@@ -344,6 +351,12 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
      * Business logic for creating lists
      * moved to SongViewModel from CreateSongList class
      */
+    /**
+     * Business logic for creating lists
+     * moved to SongViewModel from CreateSongList class
+     */
+
+
 
     /*
 This class will contain the algorithms for song list creation.
@@ -374,21 +387,7 @@ A side, B side tempo
  */
     fun createPracticeList(){
 
-        var newList = mutableListOf<SongWithRatings>()
-        newList = currentListLive.value?.songList as MutableList<SongWithRatings>
-
-        //make sure the list isn't empty
-        if(newList.isNullOrEmpty()){
-            //handle empty list error
-        }else{
-            //sort list by performance rating
-            //update song ratings
-            newList.forEach(){
-                it.recentPerformanceRating()
-            }
-            //list sorted by performance rating
-
-        }
+        //TODO modify the sorting and filters
 
     }
     fun sortByTimestamp(){
