@@ -32,6 +32,7 @@ ext {
     firebaseUiAuthVersion = '8.0.2'
     firebaseAuthKtxVersion = '21.2.0'
     playServicesAuthVersion = '20.3.0'
+    workVersion = '2.9.0'
 }
 
 task clean(type: Delete) {

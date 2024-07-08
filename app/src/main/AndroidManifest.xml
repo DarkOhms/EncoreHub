@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name="com.lukemartinrecords.encorehub.EncoreHubApplication"
         android:allowBackup="true"
@@ -9,10 +11,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.app.starting">
-        <activity
-            android:name="com.lukemartinrecords.encorehub.ui.login.LoginActivity"
-            android:exported="false"
-            android:label="@string/title_activity_login" />
         <activity
             android:name="com.lukemartinrecords.encorehub.MainActivity"
             android:exported="true">

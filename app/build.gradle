@@ -135,6 +135,8 @@ dependencies {
 }
 dependencies {
 
+
+    implementation "androidx.work:work-runtime-ktx:$workVersion"
     implementation 'androidx.preference:preference-ktx:1.2.0'
     implementation 'com.google.ar.sceneform:filament-android:1.17.1'
     implementation 'androidx.annotation:annotation:1.4.0'

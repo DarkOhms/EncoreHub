@@ -330,8 +330,10 @@ abstract class SongRoomDatabase: RoomDatabase() {
             var song = Song("C scale", artistId,72)
             val songId = songDao.insert(song)
 
+            /*
             var rating = Rating(System.currentTimeMillis(), songId, gIr)
             ratingDao.insert(rating)
+             */
 
             val masterList = SongList("All Songs/Exercises",artistId)
             val listId = listDao.insert(masterList)

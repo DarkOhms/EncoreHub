@@ -165,6 +165,7 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
             }
         })
 
+
         songViewModel.allArtists.observe(this){
             allArtists = it
         }

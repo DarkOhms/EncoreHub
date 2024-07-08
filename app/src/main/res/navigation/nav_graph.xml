@@ -8,16 +8,15 @@
     <fragment
         android:id="@+id/mainFragment"
         android:name="com.lukemartinrecords.encorehub.uifragments.MainFragment"
-        android:label="Songs Main"
-        tools:layout="@layout/fragment_main" >
+        android:label="EncoreHub"
+        tools:layout="@layout/fragment_main">
         <action
             android:id="@+id/action_mainFragment_to_newSongFragment"
             app:destination="@id/newSongFragment"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out"
             app:enterAnim="@anim/fade_in"
             app:exitAnim="@anim/fade_out"
-            />
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/fade_out" />
         <action
             android:id="@+id/action_mainFragment_to_songFragment"
             app:destination="@id/songFragment" />
