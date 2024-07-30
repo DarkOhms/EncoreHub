@@ -3,18 +3,24 @@ package com.lukemartinrecords.encorehub.uifragments
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.lukemartinrecords.encorehub.EncoreHubApplication
 import com.lukemartinrecords.encorehub.R
+import com.lukemartinrecords.encorehub.model.Song
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 
@@ -81,6 +87,34 @@ class NewSongFragment : DialogFragment() {
             val arrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, songTitles)
             val songAutoComplete = view?.findViewById<AutoCompleteTextView>(R.id.newSongTitle)
             songAutoComplete?.setAdapter(arrayAdapter)
+            songAutoComplete?.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+                    if(s != null && s.length >= 3)
+                        songViewModel.getSongSuggestions(s.toString())
+                }
+
+                override fun afterTextChanged(s: Editable?) {
+
+                }
+            })
+            songViewModel.songSuggestions.observe(this) { songList ->
+                val songTitles: ArrayList<String> = songList.map { song -> song.songTitle } as ArrayList<String>
+                Log.d("NewSongDebug", songTitles.toString())
+                arrayAdapter.addAll(songTitles)
+                arrayAdapter.notifyDataSetChanged()
+                songAutoComplete?.setAdapter(arrayAdapter)
+            }
+1
             songAutoComplete?.onItemClickListener = object : AdapterView.OnItemClickListener {
                 override fun onItemClick(
                     parent: AdapterView<*>?,

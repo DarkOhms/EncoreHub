@@ -1,9 +1,18 @@
 package com.lukemartinrecords.encorehub.data
 
+import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import com.lukemartinrecords.encorehub.BuildConfig
+import com.lukemartinrecords.encorehub.api.GetSongBpm
+import com.lukemartinrecords.encorehub.api.parseSearchJsonResult
 import com.lukemartinrecords.encorehub.model.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 /*
 12/29/2021
@@ -18,6 +27,8 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     val allSongsWithRatings: Flow<List<SongWithRatings>> = songDao.getAllSongsWithRatings()
     val allListWithRatings: Flow<List<SongListWithRatings>> = listSongM2MDao.getAllListWithRatings()
     //All I need is a list of names
+
+    val networkResults = MutableLiveData<List<Song>>()
 
 
     //this puts off the artist selection until later, currently at ViewModel creation
@@ -104,6 +115,42 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     @WorkerThread
     suspend fun updateSong(song: Song) {
         songDao.updateSong(song)
+    }
+
+    suspend fun searchSongs(search:String):List<Song> {
+
+        return withContext(IO) {
+            try {
+                //default search limit is 10
+                val response = GetSongBpm.api.search(BuildConfig.API_KEY, "song", search, 10)
+                if (response.isSuccessful) {
+                    val responseBody = response.body()
+                    val jsonString = responseBody?.string() // Get the response body as a string
+                    val jsonObject = JSONObject(jsonString) // Convert the string to a JSONObject
+                    Log.d("Success!!!", " API call successful!!!")
+                    if(jsonString.equals("{\"search\":{\"error\":\"no result\"}}")){
+                        Log.d("No results", "No results")
+                        return@withContext emptyList()
+                    }else{
+                        val songs = parseSearchJsonResult(jsonObject)
+                        return@withContext songs
+
+                    }
+                } else {
+                    Log.d("Response Failure", response.errorBody().toString())
+                    return@withContext emptyList()
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return@withContext emptyList()
+            }
+        }
+
+    }
+
+    //this is a separate function because I will likely incorporate a database filter as well
+    suspend fun getSongSuggestions(searchString: String): List<Song> {
+        return this.searchSongs(searchString)
     }
 
 }

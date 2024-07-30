@@ -55,6 +55,12 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             }
         }
     }
+
+    val songSuggestions: LiveData<List<Song>>
+        get() = _songSuggestions
+
+    val _songSuggestions: MutableLiveData<List<Song>> = MutableLiveData()
+
     ////////////
 
     //start
@@ -287,6 +293,11 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         }
 
 
+    }
+
+    fun getSongSuggestions(searchString: String) = viewModelScope.launch {
+        val data = repository.getSongSuggestions(searchString)
+        _songSuggestions.postValue(data)
     }
 
 

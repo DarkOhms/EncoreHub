@@ -2,6 +2,7 @@ package com.lukemartinrecords.encorehub
 
 import android.app.Application
 import android.os.Build
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -39,11 +40,12 @@ class EncoreHubApplication: Application() {
 
     //this is specifically for just creating notifications but likely to expand on this in the future
     private fun setupRecurringWork() {
+        Log.d("setupRecurringWork", "setupRecurringWork")
         val constraints = Constraints.Builder()
             .setRequiresBatteryNotLow(true)
             .setRequiresCharging(false)
             .apply {
-                    setRequiresDeviceIdle(true)
+                    setRequiresDeviceIdle(false)
             }.build()
 
         val repeatingRequest
@@ -53,7 +55,7 @@ class EncoreHubApplication: Application() {
 
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
             PracticeWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             repeatingRequest)
     }
 }
