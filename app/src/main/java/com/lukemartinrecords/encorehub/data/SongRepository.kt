@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.adamratzman.spotify.models.SpotifySearchResult
 import com.lukemartinrecords.encorehub.BuildConfig
 import com.lukemartinrecords.encorehub.api.GetSongBpm
+import com.lukemartinrecords.encorehub.api.SpotifyApiHandler
 import com.lukemartinrecords.encorehub.api.parseSearchJsonResult
 import com.lukemartinrecords.encorehub.model.*
 import kotlinx.coroutines.Dispatchers
@@ -121,6 +123,18 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
         return withContext(IO) {
             try {
+                val builtAPI = SpotifyApiHandler()
+                builtAPI.buildSearchApi()
+                val searchResults = builtAPI.trackSearch(search)
+                return@withContext parseTrackSearchResults(searchResults)
+
+            }catch (e:Exception){
+                e.printStackTrace()
+                return@withContext emptyList()
+            }
+        }
+            /*
+            try {
                 //default search limit is 10
                 val response = GetSongBpm.api.search(BuildConfig.API_KEY, "song", search, 10)
                 if (response.isSuccessful) {
@@ -146,6 +160,30 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
             }
         }
 
+             */
+
+    }
+    //Stripped down version from chvia223 that just gets track names and make songs out of them
+    private fun parseTrackSearchResults(searchResults: SpotifySearchResult): List<Song> {
+        var fullResultSet: MutableList<Song> = mutableListOf()
+
+        for (t in searchResults.tracks!!.items) {
+
+            val singleResult = Song(t.name, 1L,-1)
+
+            // API returns track playback time in milliseconds so this
+            // converts it to the traditional m:ss display style.
+            //val timeInSeconds = (t.length/1000).toInt()
+            //val minutes = (timeInSeconds/60).toInt()
+            //val remainderSeconds = (timeInSeconds%60).toInt()
+            //val timeString = "$minutes:$remainderSeconds"
+            //singleResultSet.add(timeString)
+
+            //singleResultSet.add(t.externalUrls.spotify.toString())
+
+            fullResultSet.add(singleResult)
+        }
+        return fullResultSet
     }
 
     //this is a separate function because I will likely incorporate a database filter as well

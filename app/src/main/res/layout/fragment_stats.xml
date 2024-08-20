@@ -1,22 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".uifragments.Stats">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stats"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.motion.widget.MotionLayout
+            android:id="@+id/motionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="?attr/actionBarSize"
+            android:paddingBottom="?attr/actionBarSize"
+            app:layoutDescription="@xml/fragment_stats_scene"
+            tools:context=".uifragments.Stats">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/stats_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:visibility="visible"
+                android:text="Player Statistics"
+                android:textSize="30sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                />
+
+            <!-- Player Name Label -->
+            <TextView
+                android:id="@+id/player_name_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Player Name"
+                app:layout_constraintTop_toBottomOf="@id/stats_title"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="8dp"
+                android:textSize="20sp" />
+            <!-- Songs/Exercises Label -->
+
+            <TextView
+                android:id="@+id/songs_exercises_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Songs/Exercises:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/player_name_tag"
+                android:layout_marginTop="8dp"
+                android:textSize="18sp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textStyle="bold"
+                />
+            <TextView
+                android:id="@+id/songs_exercises_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                app:layout_constraintStart_toEndOf="@id/songs_exercises_tag"
+                app:layout_constraintTop_toBottomOf="@id/player_name_tag"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:textSize="18sp" />
+
+            <!-- Bar that animates -->
+            <View
+                android:id="@+id/bar1"
+                android:layout_width="1dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/design_default_color_primary_dark"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/bar1"
+                app:layout_constraintTop_toBottomOf="@id/songs_exercises_tag" />
+
+            <TextView
+                android:id="@+id/total_practices_tag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Total Practice/Performances Logged:"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bar1"
+                android:layout_marginTop="8dp"
+                android:textSize="18sp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:textStyle="bold"
+                />
+            <TextView
+                android:id="@+id/total_practices_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                app:layout_constraintStart_toEndOf="@id/total_practices_tag"
+                app:layout_constraintTop_toBottomOf="@id/bar1"
+                android:layout_marginTop="8dp"
+                android:layout_marginStart="8dp"
+                android:textSize="18sp" />
+
+            <!-- Bar that animates -->
+            <View
+                android:id="@+id/bar2"
+                android:layout_width="1dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/design_default_color_primary_dark"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/bar2"
+                app:layout_constraintTop_toBottomOf="@id/total_practices_tag" />
+
+
+        </androidx.constraintlayout.motion.widget.MotionLayout>
+</layout>

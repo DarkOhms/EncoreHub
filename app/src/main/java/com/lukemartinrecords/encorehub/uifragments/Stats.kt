@@ -1,34 +1,22 @@
 package com.lukemartinrecords.encorehub.uifragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import com.lukemartinrecords.encorehub.EncoreHubApplication
 import com.lukemartinrecords.encorehub.R
+import com.lukemartinrecords.encorehub.databinding.FragmentStatsBinding
+import com.lukemartinrecords.encorehub.model.SongViewModel
+import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 
-/**
- * A simple [Fragment] subclass.
- * Use the [Stats.newInstance] factory method to
- * create an instance of this fragment.
- */
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 class Stats : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    lateinit var binding : FragmentStatsBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -37,23 +25,68 @@ class Stats : Fragment() {
         return inflater.inflate(R.layout.fragment_stats, container, false)
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment Stats.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            Stats().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentStatsBinding.bind(view)
+
+        songViewModel.currentArtistLive.observe(viewLifecycleOwner) {
+                binding.playerNameTag.text = it.name
+        }
+
+        songViewModel.allArtistSongsWithRatings.observe(viewLifecycleOwner){
+            val numberOfSongs = it.size
+            val totalNumberOfRatings = songViewModel.getTotalNumberOfRatings()
+
+            binding.songsExercisesCount.text = numberOfSongs.toString()
+            binding.totalPracticesCount.text = totalNumberOfRatings.toString()
+            Log.d("Stats", "stat bar size in dp: " + statBarSizeInDp(numberOfSongs).toString())
+            binding.motionLayout.getConstraintSet(R.id.end).constrainWidth(R.id.bar1, statBarSizeInDp(numberOfSongs))
+            binding.motionLayout.getConstraintSet(R.id.end).constrainWidth(R.id.bar2, statBarSizeInDp(totalNumberOfRatings))
+            binding.motionLayout.transitionToEnd()
+        }
+
+    }
+
+    fun convertToScreenSizePercentage(value: Int): Int {
+        var convertedValue = value
+        if (value == 0) {
+            return 0
+        }else if (value > 10) {
+            convertedValue *= 10
+        }
+        val metrics = resources.displayMetrics
+        val dp = value / (metrics.densityDpi / 160f)
+        return dp.toInt()
+    }
+
+    fun determineStatBarScale(size: Int):Int{
+        var scale = 10
+        if(size > 10){
+            scale = 20
+            return determineScaleRecursive(size,scale)
+        }
+        return scale
+    }
+
+    private fun determineScaleRecursive(size: Int, scale: Int): Int {
+
+        return if(size > scale){
+            determineScaleRecursive(size,scale*2)
+        }else{
+            scale
+        }
+    }
+
+    fun statBarSizeInDp(size: Int): Int {
+
+        val scale = determineStatBarScale(size)
+        val percentageOfScreen = size/scale.toFloat()
+        val metrics = resources.displayMetrics
+        val dp = percentageOfScreen * metrics.widthPixels
+        Log.d("Stats", "percentage of screen: " + percentageOfScreen.toString() )
+        Log.d("Stats", "width pixels: " + metrics.widthPixels.toString())
+        Log.d("Stats", "density is: " + metrics.density.toString())
+        return dp.toInt()
+
     }
 }

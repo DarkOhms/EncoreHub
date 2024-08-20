@@ -117,6 +117,9 @@ dependencies {
     implementation "com.squareup.moshi:moshi:$version_moshi"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
 
+    //Spotify Api library for kotlin
+    implementation "com.adamratzman:spotify-api-kotlin-core:3.8.5"
+
 
     // Testing
     testImplementation "junit:junit:$rootProject.junitVersion"

@@ -40,7 +40,7 @@ class RatingFragment : DialogFragment(R.layout.fragment_rating) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentRatingBinding.bind(view)
-        binding.songTitle.text = param1song.song.songTitle
+        //binding.songTitle.text = param1song.song.songTitle
         //make history button to open history fragment
         val history: Button = binding.history
         history.setOnClickListener{
