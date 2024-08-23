@@ -61,6 +61,9 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
     val _songSuggestions: MutableLiveData<List<Song>> = MutableLiveData()
 
+    val albumArtURI : LiveData<String?>
+        get() = repository.albumArt
+
     ////////////
 
     //start
@@ -300,24 +303,6 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         _songSuggestions.postValue(data)
     }
 
-    fun determineStatBarScale(size: Int):Int{
-           var scale = 10
-            if(size > 10){
-                scale = 20
-                return determineScaleRecursive(size,scale)
-            }
-        return scale
-    }
-
-    private fun determineScaleRecursive(size: Int, scale: Int): Int {
-
-        return if(size > scale){
-            determineScaleRecursive(size,scale*2)
-        }else{
-            scale
-        }
-    }
-
     fun getTotalNumberOfRatings(): Int{
         var total = 0
         allArtistSongsWithRatings.value.let {
@@ -447,6 +432,11 @@ A side, B side tempo
         performFilterFunction.value = {
             it.filter { songWithRatings -> (songWithRatings.recentPerformanceRating() > newVal) }
         }
+    }
+
+    fun getAlbumArt(song: Song)= viewModelScope.launch {
+        repository.getAlbumArt(song.songTitle)
+
     }
 
 

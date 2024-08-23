@@ -28,9 +28,12 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     val allArtists: LiveData<List<Artist>> = artistDao.getAllArtists()
     val allSongsWithRatings: Flow<List<SongWithRatings>> = songDao.getAllSongsWithRatings()
     val allListWithRatings: Flow<List<SongListWithRatings>> = listSongM2MDao.getAllListWithRatings()
+    val albumArt: MutableLiveData<String> = MutableLiveData<String>()
     //All I need is a list of names
 
     val networkResults = MutableLiveData<List<Song>>()
+    val builtAPI = SpotifyApiHandler()
+
 
 
     //this puts off the artist selection until later, currently at ViewModel creation
@@ -123,10 +126,9 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
         return withContext(IO) {
             try {
-                val builtAPI = SpotifyApiHandler()
                 builtAPI.buildSearchApi()
                 val searchResults = builtAPI.trackSearch(search)
-                return@withContext parseTrackSearchResults(searchResults)
+                return@withContext parseTrackNameSearchResults(searchResults)
 
             }catch (e:Exception){
                 e.printStackTrace()
@@ -164,7 +166,7 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     }
     //Stripped down version from chvia223 that just gets track names and make songs out of them
-    private fun parseTrackSearchResults(searchResults: SpotifySearchResult): List<Song> {
+    private fun parseTrackNameSearchResults(searchResults: SpotifySearchResult): List<Song> {
         var fullResultSet: MutableList<Song> = mutableListOf()
 
         for (t in searchResults.tracks!!.items) {
@@ -186,9 +188,38 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
         return fullResultSet
     }
 
+    private fun parseTrackArtSearchResults(searchResults: SpotifySearchResult): String {
+        var fullResultSet: MutableList<String> = mutableListOf()
+
+        for (t in searchResults.tracks!!.items) {
+
+            val singleResult = t.album.images.first().url
+            Log.d("URL", singleResult)
+
+
+            fullResultSet.add(singleResult)
+        }
+        return fullResultSet.first().toString()
+    }
+
     //this is a separate function because I will likely incorporate a database filter as well
     suspend fun getSongSuggestions(searchString: String): List<Song> {
         return this.searchSongs(searchString)
+    }
+
+    suspend fun getAlbumArt(songTitle: String) {
+        withContext(IO) {
+            try {
+                builtAPI.buildSearchApi()
+                val searchResults = builtAPI.trackSearch(songTitle)
+                albumArt.postValue(parseTrackArtSearchResults(searchResults))
+
+            }catch (e:Exception){
+                e.printStackTrace()
+                albumArt.postValue("")
+            }
+        }
+
     }
 
 }

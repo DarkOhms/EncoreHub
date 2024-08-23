@@ -6,14 +6,17 @@ import android.text.Editable
 import android.text.SpannableStringBuilder
 import android.view.View
 import androidx.appcompat.app.AlertDialog
+import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.lukemartinrecords.encorehub.EncoreHubApplication
 import com.lukemartinrecords.encorehub.R
 import com.lukemartinrecords.encorehub.databinding.FragmentSongBinding
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 import com.lukemartinrecords.encorehub.model.SongWithRatings
+import com.squareup.picasso.Picasso
 
 /**
  * A simple [Fragment] subclass.
@@ -24,6 +27,7 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
     // TODO: Rename and change types of parameters
     private lateinit var param1song: SongWithRatings
     lateinit var binding: FragmentSongBinding
+    private val albumArtURI = "https://ostrichtheory.com/wp-content/uploads/2020/02/20200206_150957-scaled.jpg"
 
     //shared view model for use in the fragment
     private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
@@ -40,6 +44,25 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
         binding = FragmentSongBinding.bind(view)
         binding.songTitleUI.text = param1song.song.songTitle
         binding.tempo.text = param1song.song.bpm.toString()
+
+
+        val imgUri = albumArtURI.toUri().buildUpon().scheme("https").build()
+        Picasso.get()
+            .load(imgUri)
+            .placeholder(R.drawable.album_placeholder)
+            .into(binding.albumArt)
+
+        songViewModel.getAlbumArt(param1song.song)
+
+        /*
+        songViewModel.albumArtURI.observe(viewLifecycleOwner){
+            Glide.with(this)
+                .load(it)
+                .placeholder(R.drawable.album_placeholder)
+                .into(binding.albumArt)
+        }
+
+         */
 
         //song notes text
         val editText: Editable = SpannableStringBuilder(param1song.song.songNotes)
