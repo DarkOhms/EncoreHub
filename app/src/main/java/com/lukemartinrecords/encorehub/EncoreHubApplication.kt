@@ -10,6 +10,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.lukemartinrecords.encorehub.data.SongRepository
 import com.lukemartinrecords.encorehub.data.SongRoomDatabase
+import com.lukemartinrecords.encorehub.utils.BPMWorker
 import com.lukemartinrecords.encorehub.utils.PracticeWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -52,10 +53,21 @@ class EncoreHubApplication: Application() {
                 = PeriodicWorkRequestBuilder<PracticeWorker>(1, TimeUnit.DAYS)
             .setConstraints(constraints)
             .build()
+        val repeatingRequest2
+                = PeriodicWorkRequestBuilder<BPMWorker>(1, TimeUnit.DAYS)
+            .setConstraints(constraints)
+            .build()
 
+        //Practice Worker
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
             PracticeWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             repeatingRequest)
+
+        //BPM Worker
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            BPMWorker.WORK_NAME,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            repeatingRequest2)
     }
 }

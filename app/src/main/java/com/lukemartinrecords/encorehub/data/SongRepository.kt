@@ -4,15 +4,19 @@ import android.util.Log
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.work.*
 import com.adamratzman.spotify.models.SpotifySearchResult
 import com.lukemartinrecords.encorehub.BuildConfig
 import com.lukemartinrecords.encorehub.api.GetSongBpm
 import com.lukemartinrecords.encorehub.api.SpotifyApiHandler
 import com.lukemartinrecords.encorehub.api.parseSearchJsonResult
+import com.lukemartinrecords.encorehub.api.parseSongJsonResultForBPM
 import com.lukemartinrecords.encorehub.model.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
@@ -222,4 +226,61 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     }
 
+    suspend fun getBPMsFromNetwork(): ListenableWorker.Result {
+        Log.d("BPM", "Getting BPMs")
+
+        var result: ListenableWorker.Result = ListenableWorker.Result.retry()
+
+        val songsThatNeedBpm = getSongsWithNoBpm()
+
+        if (songsThatNeedBpm.isEmpty()) {
+            result = ListenableWorker.Result.success()
+        }
+
+        for (song in songsThatNeedBpm) {
+
+            withContext(IO) {
+                try {
+
+                    val response =
+                        GetSongBpm.api.search(BuildConfig.API_KEY, "song", song.songTitle, 1)
+                    if (response.isSuccessful) {
+                        Log.d("Success!!!", " API call successful!!!")
+                        val responseBody = response.body()
+                        val jsonString = responseBody?.string() // Get the response body as a string
+                        val jsonObject = JSONObject(jsonString) // Convert the string to a JSONObject
+                        if (jsonString.equals("{\"search\":{\"error\":\"no result\"}}")) {
+                            Log.d("No results", "No results")
+                        } else {
+                            val bpms = parseSongJsonResultForBPM(jsonObject)
+                            if(bpms.isNotEmpty()) {
+                                val songWithBpm = song.copy(bpm = bpms.first())
+                                updateSong(songWithBpm)
+                                result = ListenableWorker.Result.success()
+                            } else {
+                                result = ListenableWorker.Result.failure()
+                            }
+
+                        }
+                    } else {
+                        Log.d("Response Failure", response.errorBody().toString())
+                        result = ListenableWorker.Result.retry()
+                    }
+                } catch (e: Exception) {
+                    Log.d("BPM Exception", e.toString())
+                    e.printStackTrace()
+                    result = ListenableWorker.Result.retry()
+                }
+            }
+        }
+        return result
+    }
+
+    private suspend fun getSongsWithNoBpm(): List<Song> {
+        Log.d("BPM", "Getting songs with no bpm")
+        val allSongs = allSongs.first()
+        val songsWithNoBpm = allSongs.filter { song -> song.bpm < 1 }
+        return songsWithNoBpm
+    }
 }
+

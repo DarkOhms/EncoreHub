@@ -3,6 +3,8 @@ package com.lukemartinrecords.encorehub.uifragments
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -13,6 +15,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.EditText
+import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.addTextChangedListener
@@ -107,6 +110,14 @@ class NewSongFragment : DialogFragment() {
 
                 }
             })
+
+            //link to website for BPMs
+            val textLinkView = view.findViewById<TextView>(R.id.link_text)
+            textLinkView.setOnClickListener{
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://getsongbpm.com/"))
+                startActivity(intent)
+            }
+
             songViewModel.songSuggestions.observe(this) { songList ->
                 val songTitles: ArrayList<String> = songList.map { song -> song.songTitle } as ArrayList<String>
                 Log.d("NewSongDebug", songTitles.toString())

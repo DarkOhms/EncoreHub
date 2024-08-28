@@ -37,10 +37,10 @@ data class Song(
     val bpm: Int,
     val songNotes: String,
 
-){
+    ){
     //constructor without bpm
     @Ignore
-    constructor(songTitle: String, artistId: Long) : this(0, songTitle, artistId, 321, "")
+    constructor(songTitle: String, artistId: Long) : this(0, songTitle, artistId, 0, "")
     //constructor with bpm
     @Ignore
     constructor(songTitle: String, artistId: Long, bpm: Int ) : this(0,songTitle, artistId, bpm, "")

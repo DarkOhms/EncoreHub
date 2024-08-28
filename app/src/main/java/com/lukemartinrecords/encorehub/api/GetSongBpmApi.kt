@@ -47,8 +47,11 @@ private val logging = HttpLoggingInterceptor().apply {
 
 private val client = OkHttpClient.Builder()
     .addInterceptor(logging)
-    .connectTimeout(20, TimeUnit.SECONDS)
-    .readTimeout(20, TimeUnit.SECONDS)
+    .retryOnConnectionFailure(true)
+    .pingInterval(5, TimeUnit.SECONDS)
+    .connectTimeout(30, TimeUnit.SECONDS)
+    .connectTimeout(30, TimeUnit.SECONDS)
+    .readTimeout(30, TimeUnit.SECONDS)
     .build()
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
