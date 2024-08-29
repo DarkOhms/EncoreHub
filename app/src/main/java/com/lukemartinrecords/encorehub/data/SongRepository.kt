@@ -10,6 +10,7 @@ import com.lukemartinrecords.encorehub.BuildConfig
 import com.lukemartinrecords.encorehub.api.GetSongBpm
 import com.lukemartinrecords.encorehub.api.SpotifyApiHandler
 import com.lukemartinrecords.encorehub.api.parseSearchJsonResult
+import com.lukemartinrecords.encorehub.api.parseSearchJsonResultForSongId
 import com.lukemartinrecords.encorehub.api.parseSongJsonResultForBPM
 import com.lukemartinrecords.encorehub.model.*
 import kotlinx.coroutines.Dispatchers
@@ -226,6 +227,10 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
     }
 
+    /*
+    This currently has to use 2 api calls, one to get the song id and another to get the bpm.
+    Only the first has error handling.
+     */
     suspend fun getBPMsFromNetwork(): ListenableWorker.Result {
         Log.d("BPM", "Getting BPMs")
 
@@ -242,19 +247,26 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
             withContext(IO) {
                 try {
 
-                    val response =
+                    val searchResponse =
                         GetSongBpm.api.search(BuildConfig.API_KEY, "song", song.songTitle, 1)
-                    if (response.isSuccessful) {
+                    if (searchResponse.isSuccessful) {
                         Log.d("Success!!!", " API call successful!!!")
-                        val responseBody = response.body()
-                        val jsonString = responseBody?.string() // Get the response body as a string
-                        val jsonObject = JSONObject(jsonString) // Convert the string to a JSONObject
-                        if (jsonString.equals("{\"search\":{\"error\":\"no result\"}}")) {
+                        val responseBody = searchResponse.body()
+                        val jsonSearchString = responseBody?.string() // Get the response body as a string
+                        val jsonSearchObject = JSONObject(jsonSearchString) // Convert the string to a JSONObject
+                        if (jsonSearchString.equals("{\"search\":{\"error\":\"no result\"}}")) {
                             Log.d("No results", "No results")
                         } else {
-                            val bpms = parseSongJsonResultForBPM(jsonObject)
-                            if(bpms.isNotEmpty()) {
-                                val songWithBpm = song.copy(bpm = bpms.first())
+                            val songId = parseSearchJsonResultForSongId(jsonSearchObject)
+
+                            val bpmResponse = GetSongBpm.api.song(BuildConfig.API_KEY, songId)
+                            val bpmResponseBody = bpmResponse.body()
+                            val bpmJsonString = bpmResponseBody?.string()
+                            val jsonBpmObject = JSONObject(bpmJsonString)
+
+                            val bpm = parseSongJsonResultForBPM(jsonBpmObject)
+                            if(bpm > 0) {
+                                val songWithBpm = song.copy(bpm = bpm)
                                 updateSong(songWithBpm)
                                 result = ListenableWorker.Result.success()
                             } else {
@@ -263,7 +275,7 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
                         }
                     } else {
-                        Log.d("Response Failure", response.errorBody().toString())
+                        Log.d("Response Failure", searchResponse.errorBody().toString())
                         result = ListenableWorker.Result.retry()
                     }
                 } catch (e: Exception) {
