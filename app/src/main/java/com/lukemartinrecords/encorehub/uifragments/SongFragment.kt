@@ -47,14 +47,15 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
 
 
         val imgUri = albumArtURI.toUri().buildUpon().scheme("https").build()
-        Picasso.get()
+       /* Picasso.get()
             .load(imgUri)
             .placeholder(R.drawable.album_placeholder)
             .into(binding.albumArt)
 
+        */
+
         songViewModel.getAlbumArt(param1song.song)
 
-        /*
         songViewModel.albumArtURI.observe(viewLifecycleOwner){
             Glide.with(this)
                 .load(it)
@@ -62,7 +63,7 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
                 .into(binding.albumArt)
         }
 
-         */
+
 
         //song notes text
         val editText: Editable = SpannableStringBuilder(param1song.song.songNotes)

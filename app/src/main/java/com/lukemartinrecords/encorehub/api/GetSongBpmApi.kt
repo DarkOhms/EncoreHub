@@ -1,5 +1,6 @@
 package com.lukemartinrecords.encorehub.api
 
+import com.lukemartinrecords.encorehub.model.NetworkSongWrapper
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -76,7 +77,7 @@ interface GetSongBpmApi {
     suspend fun song(
         @Query("api_key") apiKey: String,
         @Query("id") id: String)
-    : Response<ResponseBody>
+    : Response<NetworkSongWrapper>
 
 }
 

@@ -153,8 +153,15 @@ class NewSongFragment : DialogFragment() {
                     {_, _ ->
                         Log.d("Applog", view.toString())
                         val newSongTitle = view?.findViewById<EditText>(R.id.newSongTitle)?.text
-                        val newSongBPM = view?.findViewById<EditText>(R.id.newSongBpm)?.text
-                        listener.onDialogPositiveClick(newSongTitle.toString(), newSongBPM.toString().toInt())
+                        val newSongBPMEditable = view?.findViewById<EditText>(R.id.newSongBpm)?.text
+
+                        val newSongBPM: Int = if(newSongBPMEditable.toString() == ""){
+                            0
+                        }else{
+                            newSongBPMEditable.toString().toInt()
+                        }
+
+                        listener.onDialogPositiveClick(newSongTitle.toString(), newSongBPM)
                     }
 
             // Create the AlertDialog object and return it

@@ -17,6 +17,9 @@ the many to many relationship of lists to songs.
  */
 
 import android.content.DialogInterface
+import android.content.pm.PackageManager
+import android.os.Build
+import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.TextUtils
@@ -26,6 +29,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.fragment.app.DialogFragment
@@ -150,6 +154,21 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
         //setup toolbar
         setSupportActionBar(findViewById(R.id.my_toolbar))
 
+        // Check version of Android to request notifications
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+
+                // If the permission is not granted, request it
+                requestPermissions(
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    Companion.PERMISSION_REQUEST_CODE
+                )
+            }
+        }
+
         //initialize LiveData observers
 
         loginViewModel.authenticationState.observe(this, Observer{ authenticationState ->
@@ -161,7 +180,7 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
                 //remove logout button
                 isLoggedIn = false
                 launchSignInFlow()
-            }
+                }
             }
         })
 
@@ -426,6 +445,10 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
                 artist
             )
         dialog.show(supportFragmentManager, "SetListFragment")
+    }
+
+    companion object {
+        private const val PERMISSION_REQUEST_CODE = 5555555
     }
 
 }

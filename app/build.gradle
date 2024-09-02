@@ -93,12 +93,12 @@ dependencies {
 
 
     //firebase for authentication
-    implementation(platform("com.google.firebase:firebase-bom:32.7.2"))
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
 
     // TODO: Add the dependencies for Firebase products you want to use
 
     // When using the BoM, don't specify versions in Firebase dependencies
-    implementation "com.google.firebase:firebase-auth-ktx:$firebaseAuthKtxVersion"
+    implementation "com.google.firebase:firebase-auth-ktx"
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")

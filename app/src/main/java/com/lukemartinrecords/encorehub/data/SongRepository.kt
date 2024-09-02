@@ -261,16 +261,19 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
 
                             val bpmResponse = GetSongBpm.api.song(BuildConfig.API_KEY, songId)
                             val bpmResponseBody = bpmResponse.body()
-                            val bpmJsonString = bpmResponseBody?.string()
-                            val jsonBpmObject = JSONObject(bpmJsonString)
 
-                            val bpm = parseSongJsonResultForBPM(jsonBpmObject)
-                            if(bpm > 0) {
-                                val songWithBpm = song.copy(bpm = bpm)
-                                updateSong(songWithBpm)
-                                result = ListenableWorker.Result.success()
-                            } else {
-                                result = ListenableWorker.Result.failure()
+                            if(bpmResponseBody == null){
+                                Log.d("BPM", "BPM response body is null")
+                            }else {
+
+                                val bpm = bpmResponseBody.getSongBPM()
+                                if (bpm > 0) {
+                                    val songWithBpm = song.copy(bpm = bpm)
+                                    updateSong(songWithBpm)
+                                    result = ListenableWorker.Result.success()
+                                } else {
+                                    result = ListenableWorker.Result.failure()
+                                }
                             }
 
                         }
