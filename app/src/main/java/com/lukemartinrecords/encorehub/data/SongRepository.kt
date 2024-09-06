@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.work.*
 import com.adamratzman.spotify.models.SpotifySearchResult
 import com.lukemartinrecords.encorehub.BuildConfig
+import com.lukemartinrecords.encorehub.Constants
 import com.lukemartinrecords.encorehub.api.GetSongBpm
 import com.lukemartinrecords.encorehub.api.SpotifyApiHandler
 import com.lukemartinrecords.encorehub.api.parseSearchJsonResult
@@ -248,7 +249,7 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
                 try {
 
                     val searchResponse =
-                        GetSongBpm.api.search(BuildConfig.API_KEY, "song", song.songTitle, 1)
+                        GetSongBpm.api.search(Constants.API_KEY, "song", song.songTitle, 1)
                     if (searchResponse.isSuccessful) {
                         Log.d("Success!!!", " API call successful!!!")
                         val responseBody = searchResponse.body()
@@ -259,7 +260,7 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
                         } else {
                             val songId = parseSearchJsonResultForSongId(jsonSearchObject)
 
-                            val bpmResponse = GetSongBpm.api.song(BuildConfig.API_KEY, songId)
+                            val bpmResponse = GetSongBpm.api.song(Constants.API_KEY, songId)
                             val bpmResponseBody = bpmResponse.body()
 
                             if(bpmResponseBody == null){

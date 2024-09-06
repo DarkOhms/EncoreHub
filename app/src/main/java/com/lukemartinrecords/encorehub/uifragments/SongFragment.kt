@@ -47,12 +47,6 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
 
 
         val imgUri = albumArtURI.toUri().buildUpon().scheme("https").build()
-       /* Picasso.get()
-            .load(imgUri)
-            .placeholder(R.drawable.album_placeholder)
-            .into(binding.albumArt)
-
-        */
 
         songViewModel.getAlbumArt(param1song.song)
 
@@ -60,6 +54,7 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
             Glide.with(this)
                 .load(it)
                 .placeholder(R.drawable.album_placeholder)
+                .error(R.drawable.album_placeholder)
                 .into(binding.albumArt)
         }
 

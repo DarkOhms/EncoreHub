@@ -17,10 +17,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/small_margin"
                 android:visibility="visible"
                 android:text="Player Statistics"
-                android:textSize="30sp"
+                android:textSize="@dimen/title_text_size"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -35,8 +35,8 @@
                 app:layout_constraintTop_toBottomOf="@id/stats_title"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="8dp"
-                android:textSize="20sp" />
+                android:layout_marginTop="@dimen/small_margin"
+                android:textSize="@dimen/text_size_medium" />
             <!-- Songs/Exercises Label -->
 
             <TextView
@@ -46,29 +46,29 @@
                 android:text="Songs/Exercises:"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/player_name_tag"
-                android:layout_marginTop="8dp"
-                android:textSize="18sp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginTop="@dimen/small_margin"
+                android:textSize="@dimen/text_size_medium"
+                android:layout_marginStart="@dimen/small_margin"
+                android:layout_marginEnd="@dimen/small_margin"
                 android:textStyle="bold"
                 />
             <TextView
                 android:id="@+id/songs_exercises_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
+                android:layout_marginStart="@dimen/small_margin"
+                android:layout_marginTop="@dimen/small_margin"
+                android:textSize="@dimen/text_size_medium"
                 app:layout_constraintStart_toEndOf="@id/songs_exercises_tag"
                 app:layout_constraintTop_toBottomOf="@id/player_name_tag"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
-                android:textSize="18sp" />
+                tools:text="0" />
 
             <!-- Bar that animates -->
             <View
                 android:id="@+id/bar1"
                 android:layout_width="1dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@color/design_default_color_primary_dark"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
@@ -79,15 +79,14 @@
                 android:id="@+id/total_practices_tag"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/small_margin"
+                android:layout_marginTop="@dimen/small_margin"
+                android:layout_marginEnd="@dimen/small_margin"
                 android:text="Total Practice/Performances Logged:"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bar1"
-                android:layout_marginTop="8dp"
-                android:textSize="18sp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:textSize="@dimen/text_size_medium"
                 android:textStyle="bold"
-                />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bar1" />
             <TextView
                 android:id="@+id/total_practices_count"
                 android:layout_width="wrap_content"
@@ -95,8 +94,8 @@
                 android:text="0"
                 app:layout_constraintStart_toEndOf="@id/total_practices_tag"
                 app:layout_constraintTop_toBottomOf="@id/bar1"
-                android:layout_marginTop="8dp"
-                android:layout_marginStart="8dp"
+                android:layout_marginTop="@dimen/small_margin"
+                android:layout_marginStart="@dimen/small_margin"
                 android:textSize="18sp" />
 
             <!-- Bar that animates -->
@@ -104,7 +103,7 @@
                 android:id="@+id/bar2"
                 android:layout_width="1dp"
                 android:layout_height="40dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/activity_vertical_margin"
                 android:background="@color/design_default_color_primary_dark"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
