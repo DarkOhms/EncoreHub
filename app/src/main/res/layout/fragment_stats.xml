@@ -91,12 +91,12 @@
                 android:id="@+id/total_practices_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
                 app:layout_constraintStart_toEndOf="@id/total_practices_tag"
                 app:layout_constraintTop_toBottomOf="@id/bar1"
                 android:layout_marginTop="@dimen/small_margin"
                 android:layout_marginStart="@dimen/small_margin"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                tools:text="0"/>
 
             <!-- Bar that animates -->
             <View
