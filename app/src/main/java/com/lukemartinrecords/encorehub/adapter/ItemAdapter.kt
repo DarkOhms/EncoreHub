@@ -50,7 +50,7 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
         val button: Button = view.findViewById(R.id.submitRating)
 
         //expandable view 3/27/2022
-        val titleView: LinearLayout = view.findViewById(R.id.titleView)
+        val titleView: ConstraintLayout = view.findViewById(R.id.item_layout)
         val expand: ConstraintLayout = view.findViewById(R.id.expand)
 
         //fragment launch buttons
@@ -148,14 +148,14 @@ class ItemAdapter(private val activity: Activity, private val context: Context, 
         //val isExpandable: Boolean = isVisible[position]
         Log.d("Applog", "BeforeClick"+ position.toString() +" is " + item.expand.toString() )
 
+
+        holder.expand.visibility = if(item.expand)  View.VISIBLE else View.GONE
+
         holder.titleView.setOnClickListener{
             item.expand = !(item.expand)
-            notifyItemChanged(position)
             Log.d("Applog", "Click!!! "+ position.toString() +" is " + item.expand.toString() )
-            holder.expand.visibility = if(item.expand)  View.VISIBLE else View.GONE
-
+            notifyItemChanged(position)
         }
-        holder.expand.visibility = if(item.expand)  View.VISIBLE else View.GONE
 
     }
 
