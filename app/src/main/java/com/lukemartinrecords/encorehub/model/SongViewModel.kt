@@ -2,11 +2,19 @@ package com.lukemartinrecords.encorehub.model
 
 import android.util.Log
 import androidx.lifecycle.*
+import com.lukemartinrecords.encorehub.EncoreHubApplication
 import com.lukemartinrecords.encorehub.data.SongRepository
 import kotlinx.coroutines.*
 import kotlin.collections.ArrayList
 
-class SongViewModel(private val repository: SongRepository) : ViewModel() {
+class SongViewModel(
+    private val repository: SongRepository,
+    private val preferencesManager: EncoreHubApplication.PreferencesManager
+) : ViewModel() {
+
+    private companion object {
+        const val MASTER_LIST_NAME = "All Songs/Exercises"
+    }
 
     val allArtists: LiveData<List<Artist>> =  repository.allArtists
 
@@ -66,29 +74,13 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
     ////////////
 
-    //start
-    //default list for this phase of production
-    /*
-    val defaultList = SongList("All Songs/Exercises",1)
-    val defaultSongListWithRatings = listOf<SongWithRatings>()
+    private val currentListId = MutableLiveData<Long?>()
+    val currentListIdLive: LiveData<Long?>
+        get() = currentListId
 
-    var  currentList: SongListWithRatings  = SongListWithRatings(defaultList,defaultSongListWithRatings)
-
-
-     */
-    val listFilter: MutableLiveData<Long> = MutableLiveData<Long>(1)
-
-
-
-    val currentSetListLive: LiveData<SongListWithRatings> by lazy {
-        listFilter.switchMap{ listId ->
-
-        Log.d("currentSetListLive","mapping")
-        Log.d("currentSetListLive",listId.toString())
-        allListsWithRatings.map { list ->
-            list.find { it.setList.listId == listId }!!
-        }
-
+    val currentSetListLive: LiveData<SongListWithRatings?> = currentListId.switchMap { listId ->
+        allArtistListsWithRatings.map { lists ->
+            lists.firstOrNull { it.setList.listId == listId }
         }
     }
     //initial sort function by performance rating
@@ -113,7 +105,8 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             }
         }
         addSource(currentSetListLive) {list ->
-            value = list.songList.let { songList -> practiceSortByFunction.value?.invoke(songList) }
+            value = list?.songList?.let { songList -> practiceSortByFunction.value?.invoke(songList) }
+                ?: emptyList()
         }
     }
 
@@ -131,11 +124,11 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             }
         }
         addSource(currentSetListLive) {list ->
-            value = list.songList.let { songList ->
+            value = list?.songList?.let { songList ->
                 //filter then sort
                 val filtered = performFilterFunction.value?.invoke(songList)
                 performSortByFunction.value?.invoke(filtered!!)
-            }
+            } ?: emptyList()
         }
     }
 
@@ -143,16 +136,40 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
 
 
-    init {
-        //this initializes the currentArtistLive to the first artist in the db
-        viewModelScope.launch {
-            repository.allArtists.observeForever {
-                if(it.isNotEmpty()){
-                    _currentArtistLive.value = it.firstOrNull()
-                    repository.allArtists.removeObserver{}
-                }
-            }
+    private val artistsObserver = Observer<List<Artist>> { artists ->
+        if (artists.isEmpty()) return@Observer
+
+        val currentArtist = _currentArtistLive.value
+        if (currentArtist == null || artists.none { it.artistId == currentArtist.artistId }) {
+            val savedArtistId = preferencesManager.getCurrentArtistId()
+                ?: preferencesManager.getLastUsedArtistId()
+            val initialArtist = artists.firstOrNull { it.artistId == savedArtistId } ?: artists.first()
+            selectArtist(initialArtist)
         }
+    }
+
+    private val artistListsObserver = Observer<List<SongListWithRatings>> { lists ->
+        if (lists.isEmpty()) return@Observer
+
+        val selectedListId = currentListId.value
+        val savedListId = preferencesManager.getCurrentListId()
+        val selectedList = lists.firstOrNull { it.setList.listId == selectedListId }
+            ?: lists.firstOrNull { it.setList.listId == savedListId }
+            ?: lists.firstOrNull { it.setList.listName == MASTER_LIST_NAME }
+            ?: lists.first()
+
+        setCurrentList(selectedList.setList.listId)
+    }
+
+    init {
+        allArtists.observeForever(artistsObserver)
+        allArtistListsWithRatings.observeForever(artistListsObserver)
+    }
+
+    override fun onCleared() {
+        allArtists.removeObserver(artistsObserver)
+        allArtistListsWithRatings.removeObserver(artistListsObserver)
+        super.onCleared()
     }
 
 
@@ -174,25 +191,45 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         }
     }
 
-    //may need to change to ID
+    //may get rid of string implementation
     fun changeArtist(artist: String){
         //this can change the artist if the artist is in the db
         allArtists.value?.find {
             it.name.toString() == artist
         }?.let { changeArtist(it) }
     }
-    //no good for new artists
-    fun changeArtist(artist: Artist) {
-        Log.d("Change Artist","changeArtist called")
-        _currentArtistLive.value = artist
-        initializeWithArtist()
+
+    fun changeArtist(artistId: Long){
+        allArtists.value?.find{
+            it.artistId == artistId
+        }?.let { changeArtist(it) }
 
     }
-    fun changeNewArtist(artist: Artist, artistId: Long) {
-        Log.d("Change New Artist","changeNewArtist called")
-        artist.artistId = artistId
-        _currentArtistLive.value = artist
 
+    fun changeArtist(artist: Artist) {
+        selectArtist(artist)
+    }
+
+    fun changeNewArtist(artist: Artist, artistId: Long) {
+        artist.artistId = artistId
+        selectArtist(artist)
+    }
+
+    private fun selectArtist(artist: Artist) {
+        if (_currentArtistLive.value?.artistId == artist.artistId) return
+
+        Log.d("Change Artist", "Selected ${artist.name} (${artist.artistId})")
+        _currentArtistLive.value = artist
+        currentListId.value = null
+        preferencesManager.setCurrentArtistId(artist.artistId)
+    }
+
+    private fun setCurrentList(listId: Long) {
+        if (currentListId.value == listId) return
+
+        currentListId.value = listId
+        preferencesManager.setCurrentListId(listId)
+        Log.d("Current List", "Selected list $listId")
     }
 
     fun getSongListWithRatings(listId: Long):SongListWithRatings?{
@@ -210,9 +247,15 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
      */
     fun insertSong(song: Song) = viewModelScope.launch {
         val songId = repository.insertSong(song)
-        //also adding the song to the master list
-        val newListAssociation = SongListSongM2M(allArtistListsWithRatings.value?.get(0)!!.setList.listId,songId)
-        repository.insertListAssociation(newListAssociation)
+        if (songId == -1L) return@launch
+
+        // New songs always belong to their artist's master list, not whichever set list is active.
+        val masterListId = repository.getListId(song.artistId, MASTER_LIST_NAME)
+        if (masterListId == null) {
+            Log.e("insertSong", "No master list for artist ${song.artistId}")
+            return@launch
+        }
+        repository.insertListAssociation(SongListSongM2M(masterListId, songId))
     }
 
     fun insertRating(rating: Rating) = viewModelScope.launch {
@@ -224,7 +267,7 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         //this assumes that row ID is also artistId.  will test
         val artistId = repository.insertArtist(artist)
         Log.d("insertArtist"," artistId = " + artistId)
-        val newMasterList = SongList("All Songs/Exercises",artistId)
+        val newMasterList = SongList(MASTER_LIST_NAME,artistId)
         val listId = repository.insertList(newMasterList)
         /*
             handling this in with initializeWithArtist was not working
@@ -235,8 +278,10 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
             were launched in the viewModelScope???
         */
 
-        allArtistListsWithRatings.value?.find { it.setList.listId == listId }?.let { listFilter.value= it.setList.listId }
         changeNewArtist(artist,artistId)
+        if (listId != -1L) {
+            setCurrentList(listId)
+        }
 
     }
 
@@ -274,10 +319,16 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         //I will attempt to change by id instead of name this will require conversion
         val currentList = allArtistListsWithRatings.value?.find { it.setList.listName == listName }
         if(currentList != null) {
-            listFilter.value = currentList.setList.listId
-            Log.d("changeListByName", "currentList = " + listFilter.value!!)
+            setCurrentList(currentList.setList.listId)
+            Log.d("changeListByName", "currentList = " + currentList.setList.listId)
         }else {
             Log.d("changeListByName", "currentList is null")
+        }
+    }
+
+    fun changeList(listId: Long) {
+        if (allArtistListsWithRatings.value?.any { it.setList.listId == listId } == true) {
+            setCurrentList(listId)
         }
     }
 
@@ -293,6 +344,10 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
         selectedSongs.forEach {
             val newListAssociation = SongListSongM2M(listId,it.song.songId)
             repository.insertListAssociation(newListAssociation)
+        }
+
+        if (artist.artistId == _currentArtistLive.value?.artistId && listId != -1L) {
+            setCurrentList(listId)
         }
 
 
@@ -356,19 +411,6 @@ class SongViewModel(private val repository: SongRepository) : ViewModel() {
 
     }
 
-    fun initializeWithArtist(){
-
-        //initialize artistSongs WithRatings
-        Log.d("Initialize Artist","currentArtistLive = " + currentArtistLive.value!!.name)
-
-        if(allArtistListsWithRatings.value.isNullOrEmpty()){
-            Log.d("Initialize Artist","allArtistListsWithRatings.value is currently null")
-        }else {
-            allArtistListsWithRatings.value?.get(0)!!.also { listFilter.value = it.setList.listId }
-            Log.d("Initialize Artist", "currentList = " + listFilter.value.toString())
-        }
-
-    }
     /**
      * Business logic for creating lists
      * moved to SongViewModel from CreateSongList class
@@ -441,11 +483,14 @@ A side, B side tempo
 
 
 }
-class SongViewModelFactory(private val repository: SongRepository): ViewModelProvider.Factory{
+class SongViewModelFactory(
+    private val repository: SongRepository,
+    private val preferencesManager: EncoreHubApplication.PreferencesManager
+): ViewModelProvider.Factory{
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if(modelClass.isAssignableFrom(SongViewModel::class.java)){
             @Suppress("UNCHECKED_CAST")
-            return SongViewModel(repository) as T
+            return SongViewModel(repository, preferencesManager) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

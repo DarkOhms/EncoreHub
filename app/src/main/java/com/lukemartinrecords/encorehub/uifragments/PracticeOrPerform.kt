@@ -20,7 +20,10 @@ import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 
 class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels {
+        val application = requireActivity().application as EncoreHubApplication
+        SongViewModelFactory(application.repository, application.preferencesManager)
+    }
 
     lateinit var navController: NavController
     lateinit var spinnerDialog: Spinner
@@ -49,11 +52,21 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
         //spinner code
         spinnerDialog = view.findViewById(R.id.spinner_dialog)
 
-        songViewModel.allArtistListsWithRatings.observe(viewLifecycleOwner){
+        songViewModel.allArtistListsWithRatings.observe(viewLifecycleOwner) { lists ->
             listNames = songViewModel.getListTitles()
             val arrayAdapter = ArrayAdapter(requireContext(), R.layout.dropdown_item, listNames)
-            spinnerDialog.onItemSelectedListener = this
+            val selectedIndex = lists.indexOfFirst {
+                it.setList.listId == songViewModel.currentListIdLive.value
+            }
+
+            // Setting an adapter selects index 0 by default. Restore the active list before
+            // attaching the listener so that default callback cannot overwrite persisted state.
+            spinnerDialog.onItemSelectedListener = null
             spinnerDialog.adapter = arrayAdapter
+            if (selectedIndex >= 0) {
+                spinnerDialog.setSelection(selectedIndex, false)
+            }
+            spinnerDialog.onItemSelectedListener = this
         }
 
         //end spinner code
@@ -79,7 +92,9 @@ class PracticeOrPerform : Fragment(), View.OnClickListener, AdapterView.OnItemSe
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, index: Int, p3: Long) {
         Log.d("SpinnerDebug", "You selected " + listNames[index])
-        songViewModel.changeListByName(listNames[index])
+        songViewModel.allArtistListsWithRatings.value
+            ?.getOrNull(index)
+            ?.let { songViewModel.changeList(it.setList.listId) }
 
     }
 

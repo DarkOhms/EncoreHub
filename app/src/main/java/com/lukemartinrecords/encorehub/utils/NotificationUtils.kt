@@ -6,6 +6,7 @@ import android.content.Context
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
 import com.lukemartinrecords.encorehub.BuildConfig
 import com.lukemartinrecords.encorehub.MainActivity
@@ -56,6 +57,44 @@ fun sendNotification(context: Context) {
             .build()
 
         notificationManager.notify(getUniqueId(), notification)
+}
+
+fun sendNotification(context: Context, artistId: Int) {
+    Log.d("SendNotification", "sendNotification() called for artist $artistId")
+
+    val notificationManager = context
+        .getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+        && notificationManager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null
+    ) {
+        val name = context.getString(R.string.app_name)
+        val channel = NotificationChannel(
+            NOTIFICATION_CHANNEL_ID,
+            name,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+        notificationManager.createNotificationChannel(channel)
+    }
+
+    // Create deep link to artist profile with the artist ID as an argument
+    val deepLinkIntent = NavDeepLinkBuilder(context)
+        .setGraph(R.navigation.nav_graph)
+        .setComponentName(MainActivity::class.java)
+        .setDestination(R.id.practice_fragment) // Change to your artist profile destination
+        .setArguments(bundleOf("artistId" to artistId))
+        .createPendingIntent()
+
+    val notification = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
+        .setSmallIcon(R.mipmap.ic_launcher)
+        .setContentTitle("Practice Reminder")
+        .setContentText(context.getString(R.string.practice_reminder1))
+        .setContentIntent(deepLinkIntent)
+        .setPriority(NotificationCompat.PRIORITY_MAX)
+        .setAutoCancel(true)
+        .build()
+
+    notificationManager.notify(getUniqueId(), notification)
 }
 
 private fun getUniqueId() = ((System.currentTimeMillis() % 10000).toInt())

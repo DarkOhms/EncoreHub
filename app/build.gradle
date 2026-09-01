@@ -55,77 +55,62 @@ android {
     buildFeatures {
         dataBinding true
         viewBinding true
+        buildConfig true
     }
     namespace 'com.lukemartinrecords.encorehub'
 }
 
-dependencies {
-    implementation 'androidx.legacy:legacy-support-core-utils:1.0.0'
+kapt {
+    arguments {
+        arg("room.schemaLocation", "$projectDir/schemas")
+    }
 }
 
 dependencies {
-
     implementation "androidx.appcompat:appcompat:$rootProject.appCompatVersion"
     implementation "androidx.activity:activity-ktx:$rootProject.activityVersion"
     implementation 'androidx.core:core-splashscreen:1.0.0'
 
-    // Dependencies for working with Architecture components
-    // You'll probably have to update the version numbers in build.gradle (Project)
-
-    // Room components
+    // Persistence
+    implementation "androidx.room:room-runtime:$rootProject.roomVersion"
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
     androidTestImplementation "androidx.room:room-testing:$rootProject.roomVersion"
 
-    // Lifecycle components
+    // Architecture components
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-common-java8:$rootProject.lifecycleVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutines"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutines"
 
-    // Kotlin components
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.20-Beta"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutines"
-    api "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutines"
-
-    // UI
+    // UI and navigation
     implementation "androidx.constraintlayout:constraintlayout:$rootProject.constraintLayoutVersion"
     implementation "com.google.android.material:material:$rootProject.materialVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
+    implementation "androidx.work:work-runtime-ktx:$rootProject.workVersion"
+    implementation 'androidx.preference:preference-ktx:1.2.0'
+    implementation 'androidx.annotation:annotation:1.4.0'
 
-
-    //firebase for authentication
+    // Authentication and analytics
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
-
-    // TODO: Add the dependencies for Firebase products you want to use
-
-    // When using the BoM, don't specify versions in Firebase dependencies
-    implementation "com.google.firebase:firebase-auth-ktx"
     implementation "com.firebaseui:firebase-ui-auth:$firebaseUiAuthVersion"
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-auth")
-
+    implementation "com.google.firebase:firebase-analytics"
+    implementation "com.google.firebase:firebase-auth"
     implementation "com.google.android.gms:play-services-auth:$playServicesAuthVersion"
 
-    // Retrofit with Moshi Converter
+    // Network
     implementation "com.squareup.retrofit2:retrofit:$version_retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$version_retrofit"
-    implementation "com.squareup.retrofit2:converter-scalars:$version_retrofit"
-
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.2'
-
-    // Moshi
     implementation "com.squareup.moshi:moshi:$version_moshi"
     implementation "com.squareup.moshi:moshi-kotlin:$version_moshi"
-
-    //Spotify Api library for kotlin
     implementation "com.adamratzman:spotify-api-kotlin-core:3.8.5"
 
-    //Glide and Picasso
+    // Images
     implementation 'com.github.bumptech.glide:glide:4.15.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.15.0'
-    implementation 'com.squareup.picasso:picasso:2.5.2'
-    implementation 'com.squareup.picasso:picasso:2.71828'
-
 
     // Testing
     testImplementation "junit:junit:$rootProject.junitVersion"
@@ -134,48 +119,6 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     androidTestImplementation "androidx.test.ext:junit:$rootProject.androidxJunitVersion"
-}
-
-dependencies {
-
-    //Room Database Dependencies
-    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    def room_version = '2.4.3'
-
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-
-    // optional - Kotlin Extensions and Coroutines support for Room
-    implementation "androidx.room:room-ktx:$room_version"
-
-
-    // optional - Test helpers
-    testImplementation "androidx.room:room-testing:$room_version"
-
-    // optional - Paging 3 Integration
-    implementation 'androidx.room:room-paging:2.4.3'
-}
-dependencies {
-
-
-    implementation "androidx.work:work-runtime-ktx:$workVersion"
-    implementation 'androidx.preference:preference-ktx:1.2.0'
-    implementation 'com.google.ar.sceneform:filament-android:1.17.1'
-    implementation 'androidx.annotation:annotation:1.4.0'
-    def nav_version = '2.5.2'
-
-    // Kotlin
-    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
-
-    // Feature module Support
-    implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
-
-    // Testing Navigation
-    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
-
-    // Jetpack Compose Integration
-    implementation 'androidx.navigation:navigation-compose:2.5.2'
 }
 
 

@@ -21,7 +21,10 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     //lateinit var binding: FragmentMainBinding
 
     //shared view model for use in the fragment
-    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels {
+        val application = requireActivity().application as EncoreHubApplication
+        SongViewModelFactory(application.repository, application.preferencesManager)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -1,12 +1,13 @@
 package com.lukemartinrecords.encorehub.data
 
 import androidx.room.*
-import com.lukemartinrecords.encorehub.model.ArtistLists
 import com.lukemartinrecords.encorehub.model.SongList
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ListDao {
+    @Query("SELECT listId FROM list_table WHERE artistId = :artistId AND listName = :listName LIMIT 1")
+    suspend fun getListId(artistId: Long, listName: String): Long?
+
     /*
     12/12/2022
 
@@ -23,9 +24,4 @@ interface ListDao {
     @Query("DELETE FROM list_table WHERE listId = :id")
     suspend fun deleteList(id: Long)
 
-    //gets artist song lists
-    @Transaction
-    @Query("SELECT * FROM list_table"+
-            " WHERE artistId = :artistId")
-    fun getArtistLists(artistId: Long): Flow<List<ArtistLists>>
 }

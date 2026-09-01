@@ -70,7 +70,10 @@ class MainActivity : AppCompatActivity(), NewSongFragment.NewSongListener, NewAr
     //end login variables
 
     private val songViewModel: SongViewModel by viewModels {
-        SongViewModelFactory((application as EncoreHubApplication).repository)
+        SongViewModelFactory(
+            (application as EncoreHubApplication).repository,
+            (application as EncoreHubApplication).preferencesManager
+        )
     }
 
     lateinit var allArtists: List<Artist>

@@ -30,7 +30,10 @@ class RatingHistoryFragment : Fragment() {
 
 
     //shared view model for use in the fragment
-    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels {
+        val application = requireActivity().application as EncoreHubApplication
+        SongViewModelFactory(application.repository, application.preferencesManager)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -1,6 +1,8 @@
 package com.lukemartinrecords.encorehub
 
 import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
 import androidx.work.Constraints
@@ -27,6 +29,7 @@ class EncoreHubApplication: Application() {
 
     val repository by lazy { SongRepository(database.songDao(), database.ratingDao(),
         database.artistDao(), database.listDao(), database.listM2MDao() ) }
+    val preferencesManager by lazy { PreferencesManager(this) }
     override fun onCreate() {
         super.onCreate()
         delayedInit()
@@ -61,7 +64,7 @@ class EncoreHubApplication: Application() {
         //Practice Worker
         WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
             PracticeWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            ExistingPeriodicWorkPolicy.KEEP,
             repeatingRequest)
 
         //BPM Worker
@@ -69,5 +72,36 @@ class EncoreHubApplication: Application() {
             BPMWorker.WORK_NAME,
             ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
             repeatingRequest2)
+    }
+
+    class PreferencesManager(context: Context) {
+        private val prefs: SharedPreferences =
+            context.getSharedPreferences("EncoreHubPrefs", Context.MODE_PRIVATE)
+
+        fun setCurrentArtistId(artistId: Long) {
+            prefs.edit().putLong("current_artist_id", artistId).apply()
+        }
+
+        fun getCurrentArtistId(): Long? = getLong("current_artist_id")
+
+        fun setCurrentListId(listId: Long) {
+            prefs.edit().putLong("current_list_id", listId).apply()
+        }
+
+        fun getCurrentListId(): Long? = getLong("current_list_id")
+
+        // Retain the original preference as a one-time fallback for installations that used it.
+        fun getLastUsedArtistId(): Long? = getLong("last_used_artist_id")
+
+        private fun getLong(key: String): Long? {
+            if (!prefs.contains(key)) return null
+
+            return try {
+                prefs.getLong(key, -1L).takeIf { it >= 0L }
+            } catch (_: ClassCastException) {
+                // The earlier implementation stored artist IDs as Ints.
+                prefs.getInt(key, -1).toLong().takeIf { it >= 0L }
+            }
+        }
     }
 }

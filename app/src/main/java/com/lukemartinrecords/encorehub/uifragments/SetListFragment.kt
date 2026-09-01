@@ -26,7 +26,10 @@ private const val ARG_PARAM2 = "param2"
 class SetListFragment : DialogFragment() {
 
     //shared view model for use in the fragment
-    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels {
+        val application = requireActivity().application as EncoreHubApplication
+        SongViewModelFactory(application.repository, application.preferencesManager)
+    }
     //artist?
     private lateinit var param1Artist: Artist
 

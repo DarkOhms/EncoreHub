@@ -20,7 +20,10 @@ import com.lukemartinrecords.encorehub.model.SongWithRatings
 class PracticeFragment : Fragment() {
 
     //shared view model for use in the fragment
-    private val songViewModel: SongViewModel by activityViewModels(){ SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels {
+        val application = requireActivity().application as EncoreHubApplication
+        SongViewModelFactory(application.repository, application.preferencesManager)
+    }
     val TAG = "PracticeFragment"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +37,12 @@ class PracticeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val artistId = arguments?.getInt("artistId", -1)
+        if (artistId != -1) {
+            if (artistId != null) {
+                songViewModel.changeArtist(artistId.toLong())
+            }
+        }
         // Inflate the layout for this fragment
         val recyclerView = view.findViewById<RecyclerView>(R.id.practice_recycler_view)
         val adapter = ItemAdapter(requireActivity(), requireContext(),

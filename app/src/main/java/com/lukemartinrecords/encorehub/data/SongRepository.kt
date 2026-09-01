@@ -50,21 +50,12 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     }
 
     //list functions
-    //12/12/2022 retrieve artist lists
-
-    fun gatArtistSongLists(artistId:Long):Flow<List<ArtistLists>>{
-        return listDao.getArtistLists(artistId)
-    }
-
     fun gatSongListWithRatings(listId:Long):Flow<SongListWithRatings>{
         return listSongM2MDao.getSongListWithRatings(listId)
     }
 
     fun getArtistListsWithRatings(artistId: Long): Flow<List<SongListWithRatings>>{
         return listSongM2MDao.getArtistListsWithRatings(artistId)
-    }
-    fun getArtistLists(artistId: Long):Flow<List<ArtistLists>>{
-        return listDao.getArtistLists(artistId)
     }
     //end list functions
 
@@ -90,6 +81,10 @@ class SongRepository(private val songDao: SongDao, private val ratingDao: Rating
     @WorkerThread
     suspend fun insertList(newList: SongList):Long {
         return listDao.insert(newList)
+    }
+
+    suspend fun getListId(artistId: Long, listName: String): Long? {
+        return listDao.getListId(artistId, listName)
     }
     @Suppress("RedundantSuspendModifier")
     @WorkerThread

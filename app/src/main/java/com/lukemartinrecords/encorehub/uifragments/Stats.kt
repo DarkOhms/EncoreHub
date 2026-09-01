@@ -15,7 +15,10 @@ import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 
 class Stats : Fragment() {
 
-    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels {
+        val application = requireActivity().application as EncoreHubApplication
+        SongViewModelFactory(application.repository, application.preferencesManager)
+    }
     lateinit var binding : FragmentStatsBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

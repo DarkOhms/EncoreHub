@@ -16,7 +16,6 @@ import com.lukemartinrecords.encorehub.databinding.FragmentSongBinding
 import com.lukemartinrecords.encorehub.model.SongViewModel
 import com.lukemartinrecords.encorehub.model.SongViewModelFactory
 import com.lukemartinrecords.encorehub.model.SongWithRatings
-import com.squareup.picasso.Picasso
 
 /**
  * A simple [Fragment] subclass.
@@ -30,7 +29,10 @@ class SongFragment : DialogFragment(R.layout.fragment_song) {
     private val albumArtURI = "https://ostrichtheory.com/wp-content/uploads/2020/02/20200206_150957-scaled.jpg"
 
     //shared view model for use in the fragment
-    private val songViewModel: SongViewModel by activityViewModels { SongViewModelFactory((requireActivity().application as EncoreHubApplication).repository) }
+    private val songViewModel: SongViewModel by activityViewModels {
+        val application = requireActivity().application as EncoreHubApplication
+        SongViewModelFactory(application.repository, application.preferencesManager)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
