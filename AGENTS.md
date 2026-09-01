@@ -39,3 +39,12 @@ Android application written primarily in Kotlin.
 - Before implementation, define an explicit file-ownership list. Use separate worktrees only for
   truly disjoint file sets; the main thread integrates their work.
 - Do not modify unrelated existing changes in a dirty working tree.
+
+## Git integration
+- Only the main Codex thread may stage, commit, push, or merge. It does so after independent review
+  and relevant validation pass, and only when the user has authorized the Git operation.
+- Before integrating, inspect `git status`, the complete diff against the merge target, and the
+  current target branch. Do not stage unrelated files, IDE metadata, credentials, or generated files
+  unless their inclusion has been explicitly confirmed.
+- Sync the feature branch before merging. Resolve conflicts in the integration thread, rerun relevant
+  validation after conflict resolution, then push the merged target branch.
