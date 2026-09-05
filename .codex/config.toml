@@ -1,3 +1,6 @@
+model = "gpt-6-astra"
+model_reasoning_effort = "high"
+
 [agents]
 # Read-only research and review can overlap; implementation stays serialized.
 max_concurrent_threads_per_session = 3
